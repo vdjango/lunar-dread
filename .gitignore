@@ -1,0 +1,8 @@
+/build/
+/dist/
+/test-build/
+/__pycache__/
+*.py[cod]
+*.log
+.idea/
+.vscode/

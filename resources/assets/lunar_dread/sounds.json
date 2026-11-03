@@ -1,0 +1,44 @@
+{
+  "heart": {
+    "subtitle": "subtitles.lunar_dread.heart",
+    "sounds": [
+      "lunar_dread:heart"
+    ]
+  },
+  "cloth_grab": {
+    "subtitle": "subtitles.lunar_dread.cloth_grab",
+    "sounds": [
+      "lunar_dread:cloth_grab"
+    ]
+  },
+  "wall_scrape": {
+    "subtitle": "subtitles.lunar_dread.wall_scrape",
+    "sounds": [
+      "lunar_dread:wall_scrape"
+    ]
+  },
+  "whisper": {
+    "subtitle": "subtitles.lunar_dread.whisper",
+    "sounds": [
+      "lunar_dread:whisper"
+    ]
+  },
+  "rift": {
+    "subtitle": "subtitles.lunar_dread.rift",
+    "sounds": [
+      "lunar_dread:rift"
+    ]
+  },
+  "silence": {
+    "subtitle": "subtitles.lunar_dread.silence",
+    "sounds": [
+      "lunar_dread:silence"
+    ]
+  },
+  "tension": {
+    "subtitle": "subtitles.lunar_dread.tension",
+    "sounds": [
+      {"name": "lunar_dread:tension", "stream": true}
+    ]
+  }
+}
