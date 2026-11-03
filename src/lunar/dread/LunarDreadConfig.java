@@ -61,7 +61,7 @@ public final class LunarDreadConfig {
             .defineInRange("tensionMusicVolumeScale", 1.0, 0.0, 2.0);
         client.pop();
         client.push("visuals");
-        MOON_FOG_ENABLED = client.comment("Render phase-specific ground fog for all 15 moon phases. Sky and moon remain visible.")
+        MOON_FOG_ENABLED = client.comment("Render phase-specific ground fog for all 16 moon phases. Sky and moon remain visible.")
             .define("moonFogEnabled", true);
         MOON_FOG_DISTANCE_SCALE = client.comment("Scales non-blood moon fog sight distance; smaller values produce thicker fog.")
             .defineInRange("moonFogDistanceScale", 1.0, 0.5, 2.0);
