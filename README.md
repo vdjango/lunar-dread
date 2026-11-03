@@ -16,6 +16,26 @@
 
 Lunar Dread 是面向 **Minecraft 1.21.1 / NeoForge** 的月相恐怖模组。月亮会改变夜晚的光线、重力与遭遇：血雾遮住地面，巨月像活物一样搏动，异常生物循着玩家的声音与足迹接近。攻击保留前摇、遮挡判定与冷却，给玩家观察、躲避和救援的机会。
 
+## 实机预览
+
+以下画面来自 Minecraft 客户端实测，并非概念图。月面、怪物与动物画面摄于此前的验证版本；本次调整的深红射线和逐夜浓雾需要重新实拍，不能把旧图当成新效果验收。
+
+| 常态血月 | 凝望后的巨月 |
+|---|---|
+| ![常态血月](docs/images/moon-blood.png) | ![巨月占据夜空](docs/images/moon-giant.png) |
+| 血月中的地面 | 失重中的玩家 |
+| ![血月世界](docs/images/moon-world.png) | ![玩家失重翻滚](docs/images/gravity-tumble.png) |
+| 原创恐怖实体 | 月相专属异体 |
+| ![五类原创怪物](docs/images/monsters-original.png) | ![月相异体](docs/images/monsters-lunar.png) |
+| 山羊喷火 | 绵羊吐 TNT |
+| ![山羊喷火连续帧](docs/images/goat-fire.jpg) | ![绵羊吐 TNT 连续帧](docs/images/sheep-tnt.jpg) |
+| 羊驼扇形 TNT | 被怪物掳走 |
+| ![羊驼扇形 TNT 连续帧](docs/images/llama-tnt.jpg) | ![第一人称被掳走](docs/images/abduction.png) |
+
+![真实降落的补给货箱](docs/images/supply-crate.png)
+
+截图使用验证世界，其中部分怪物曾固定站位以便拍摄；长期多人游戏的实际生成密度会不同。
+
 ## 功能
 
 - **15 种月相**：和平增益、血月与主题异变，支持管理员手动切换。
