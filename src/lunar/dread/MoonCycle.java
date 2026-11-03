@@ -26,25 +26,28 @@ import net.neoforged.neoforge.network.PacketDistributor;
 
 /** One persisted choice per world night, shared by local hosts and LAN guests. */
 public final class MoonCycle {
-    public static final int NORMAL=0,HARVEST=1,BLUE=2,WIND=3,GREEN=4,STAR=5,BLOOD=6,PURPLE=7,PALE=8,MIRROR=9,GRAVITY=10,AMBER=11,TIDE=12,RUST=13,PAPER=14;
-    public static final String[] IDS={"normal","harvest","blue","wind","green","star","blood","purple","pale","mirror","gravity","amber","tide","rust","paper"};
-    public static final String[] NAMES={"普通月","丰收月","蓝月","旅风月","翠息月","星砂月","血月","紫狱月","苍白月","黑镜月","倒悬月","琥珀月","青潮月","锈雨月","纸幕月"};
-    private static final int[] UNLOCK={1,1,1,6,1,6,10,11,16,21,76,26,41,46,51};
+    public static final int NORMAL=0,HARVEST=1,BLUE=2,WIND=3,GREEN=4,STAR=5,BLOOD=6,PURPLE=7,PALE=8,MIRROR=9,GRAVITY=10,AMBER=11,TIDE=12,RUST=13,PAPER=14,ASH=15;
+    public static final String[] IDS={"normal","harvest","blue","wind","green","star","blood","purple","pale","mirror","gravity","amber","tide","rust","paper","ash"};
+    public static final String[] NAMES={"普通月","丰收月","蓝月","旅风月","翠息月","星砂月","血月","紫狱月","苍白月","黑镜月","倒悬月","琥珀月","青潮月","锈雨月","纸幕月","灰烬月"};
+    private static final int[] UNLOCK={1,1,1,6,1,6,10,11,16,21,76,26,41,46,51,61};
     public static final class State extends SavedData {
         public int day=-1,kind,form,overlay,dry,dangerStreak,countedDay=-1,stars;
         public int beforeDry,beforeStreak,countedKind=-1;
         public boolean superMoon;
         public long awakenedAt=-1,nightAt=-1,seed,deathAt=-1;
         public boolean applied,forced;
-        public int[] last=new int[15],counts=new int[15];
+        public int[] last=new int[IDS.length],counts=new int[IDS.length];
         public State(){Arrays.fill(last,-1000);}
         static State load(CompoundTag t,HolderLookup.Provider r){
-            var s=new State();s.day=t.getInt("day");s.kind=Math.clamp(t.getInt("kind"),0,14);s.form=t.getInt("form");s.overlay=t.getInt("overlay");
+            var s=new State();s.day=t.getInt("day");s.kind=Math.clamp(t.getInt("kind"),0,IDS.length-1);s.form=t.getInt("form");s.overlay=t.getInt("overlay");
             s.dry=t.getInt("dry");s.dangerStreak=t.getInt("dangerStreak");s.countedDay=t.getInt("countedDay");s.stars=t.getInt("stars");
             s.awakenedAt=t.getLong("awakenedAt");s.nightAt=t.getLong("nightAt");s.seed=t.getLong("seed");s.deathAt=t.contains("deathAt")?t.getLong("deathAt"):-1;
             s.applied=t.getBoolean("applied");s.forced=t.getBoolean("forced");
             s.beforeDry=t.getInt("beforeDry");s.beforeStreak=t.getInt("beforeStreak");s.countedKind=t.contains("countedKind")?t.getInt("countedKind"):s.kind;s.superMoon=t.getBoolean("superMoon");
-            if(t.getIntArray("last").length==15)s.last=t.getIntArray("last");if(t.getIntArray("counts").length==15)s.counts=t.getIntArray("counts");return s;
+            int[] oldLast=t.getIntArray("last"),oldCounts=t.getIntArray("counts");
+            if(oldLast.length>0)System.arraycopy(oldLast,0,s.last,0,Math.min(oldLast.length,s.last.length));
+            if(oldCounts.length>0)System.arraycopy(oldCounts,0,s.counts,0,Math.min(oldCounts.length,s.counts.length));
+            return s;
         }
         @Override public CompoundTag save(CompoundTag t,HolderLookup.Provider r){
             t.putInt("day",day);t.putInt("kind",kind);t.putInt("form",form);t.putInt("overlay",overlay);t.putInt("dry",dry);t.putInt("dangerStreak",dangerStreak);
@@ -73,7 +76,7 @@ public final class MoonCycle {
         int danger=week<=2?0:week<=4?5:week<=8?10:week<=12?15:week<=16?18:20;
         if(s.dry>=10)return weighted(s,random,day,1,new int[]{30,25,20,15,10});
         int r=random.nextInt(100);if(r<peace)return weighted(s,random,day,1,new int[]{30,25,20,15,10});
-        if(r<peace+danger&&s.dangerStreak<2)return weighted(s,random,day,7,new int[]{25,17,15,10,10,9,8,6});return NORMAL;
+        if(r<peace+danger&&s.dangerStreak<2)return weighted(s,random,day,7,new int[]{25,17,15,10,10,9,8,6,6});return NORMAL;
     }
     private static void bloodForm(ServerLevel l,State s,Random random){
         int n=Math.max(1,LunarDread.score(l,"#blood_count")+(LivingMoon.active(l)?0:1));

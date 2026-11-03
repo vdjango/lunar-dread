@@ -27,7 +27,7 @@ public final class LunarCommands {
         creatures.addAll(List.of(MoonContent.ACTORS));CREATURES=List.copyOf(creatures);
         var events=new ArrayList<>(List.of("moon.strike","moon.gaze","moon.blackout","moon.gravity",
             "moon.contact","blood.hunt","air.raid","supply.guarded","supply.rich","supply.star","player.cure"));
-        for(String id:List.of("purple","pale","mirror","amber","tide","rust","paper"))events.add("anomaly."+id);
+        for(String id:List.of("purple","pale","mirror","amber","tide","rust","paper","ash"))events.add("anomaly."+id);
         for(String id:CREATURES)events.add("creature."+id);
         EVENTS=List.copyOf(events);
     }

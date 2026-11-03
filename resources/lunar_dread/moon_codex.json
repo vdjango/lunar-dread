@@ -1,0 +1,66 @@
+{
+  "title": "月魇 · 月相异闻录",
+  "author": "月魇观测者",
+  "pages": [
+    [
+      {"text": "月相异闻录\n", "color": "#D65070", "bold": true},
+      {"text": "第十六次夜间观测\n\n", "color": "#A788AF"},
+      {"text": "月亮会改变颜色，世界也会改变呼吸。\n\n", "color": "#E1DBD4"},
+      {"text": "观察天空，也观察地面。雾最浓时，不要只相信脚下的路。", "color": "#C5ADB9"}
+    ],
+    [
+      {"text": "普通月\n", "color": "#D3D8E4", "bold": true},
+      {"text": "熟悉的光，不代表熟悉的夜。\n\n", "color": "#BFC8D5"},
+      {"text": "丰收月\n", "color": "#F1CA79", "bold": true},
+      {"text": "田野与收获受到眷顾；别把好天气误认成绝对安全。", "color": "#D8C9A5"}
+    ],
+    [
+      {"text": "蓝月\n", "color": "#78B9F4", "bold": true},
+      {"text": "幸运偏向采集者，冷色夜雾压低远方的轮廓。\n\n", "color": "#B8D6EF"},
+      {"text": "旅风月\n", "color": "#83E0DB", "bold": true},
+      {"text": "脚步变轻，移动更快；风里也可能藏着别人的脚步。", "color": "#B2DAD5"}
+    ],
+    [
+      {"text": "翠息月\n", "color": "#7DD795", "bold": true},
+      {"text": "挖掘与饱食更顺利，绿雾随夜深逐渐聚拢。\n\n", "color": "#B5DCB8"},
+      {"text": "星砂月\n", "color": "#AFD6FF", "bold": true},
+      {"text": "银蓝光柱指向少量补给。去之前，先记住回来的方向。", "color": "#C7DEF6"}
+    ],
+    [
+      {"text": "血月\n", "color": "#E1485A", "bold": true},
+      {"text": "红雾会吞掉路。月亮看起来越近，越不要抬头久望。\n\n", "color": "#D88F9B"},
+      {"text": "月面突然改变颜色时，离开脚下的红圈；屋顶有时比勇气更可靠。", "color": "#E1C1C5"}
+    ],
+    [
+      {"text": "紫狱月\n", "color": "#B476E4", "bold": true},
+      {"text": "裂隙附近可能出现界钉与缝合异体。\n\n", "color": "#CCB1E8"},
+      {"text": "苍白月\n", "color": "#E2E4D0", "bold": true},
+      {"text": "安静比奔跑更有用；有东西正在听。", "color": "#C8CFC9"}
+    ],
+    [
+      {"text": "黑镜月\n", "color": "#A0AFC5", "bold": true},
+      {"text": "镜中的脚印不一定和你同步。\n\n", "color": "#BEC9DA"},
+      {"text": "倒悬月\n", "color": "#BBA5F2", "bold": true},
+      {"text": "重力会失约，身体和视野一起翻转。屋顶也挡不住眩晕。", "color": "#D1C3ED"}
+    ],
+    [
+      {"text": "琥珀月\n", "color": "#F0B369", "bold": true},
+      {"text": "你走过的路，可能被迟来的影子重走。\n\n", "color": "#E0C39D"},
+      {"text": "青潮月\n", "color": "#68C7D2", "bold": true},
+      {"text": "空间像潮水推搡，别靠悬崖试探平衡。", "color": "#A8DCE0"}
+    ],
+    [
+      {"text": "锈雨月\n", "color": "#D68A63", "bold": true},
+      {"text": "金属有了方向，持械时留意身边。\n\n", "color": "#DDB6A2"},
+      {"text": "纸幕月\n", "color": "#D3A7CC", "bold": true},
+      {"text": "眼前的东西可能只是一层幕布；幕后的脚步不会停。\n\n", "color": "#E4C7DE"},
+      {"text": "灰烬月\n", "color": "#EB8B57", "bold": true},
+      {"text": "看见地上的火圈就离开。天空落下的东西不只是一点灰。", "color": "#DEB09A"}
+    ],
+    [
+      {"text": "观测附记\n", "color": "#F2D6A2", "bold": true},
+      {"text": "雾从入夜开始加深，月亮升至高处时最浓，黎明前逐渐散去。\n\n", "color": "#DDD5CD"},
+      {"text": "若看不清路，停下、报位、找掩体。把幸存者带回家。", "color": "#D29BAE"}
+    ]
+  ]
+}

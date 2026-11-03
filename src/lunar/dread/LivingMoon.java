@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import net.minecraft.commands.Commands;
+import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSetSubtitleTextPacket;
@@ -37,7 +38,7 @@ public final class LivingMoon {
         MoonCycle.awaken(level,null);current.begin(level,players);return current.targets.size();
     }
     private static final int TRACK = 48, LOCK = 32, FIRE = 20;
-    private static final double RADIUS = 3;
+    private static final double RADIUS = 4.5;
     private record Target(UUID player, Vec3 aim, Vec3 impact) {}
     private final List<Target> targets = new ArrayList<>();
     private boolean wasActive;
@@ -91,7 +92,8 @@ public final class LivingMoon {
             targets.set(i, new Target(t.player, t.aim, impact));
             level.playSound(null, net.minecraft.core.BlockPos.containing(impact), SoundEvents.WARDEN_SONIC_BOOM, SoundSource.HOSTILE, 1.6f, 0.65f);
             level.sendParticles(ParticleTypes.FLASH, impact.x, impact.y + 0.1, impact.z, 1, 0, 0, 0, 0);
-            level.sendParticles(ParticleTypes.SOUL_FIRE_FLAME, impact.x, impact.y + 0.15, impact.z, 36, 1.7, 0.12, 1.7, 0.015);
+            level.sendParticles(new DustParticleOptions(new org.joml.Vector3f(.58f,.015f,.045f),1.6f),
+                impact.x, impact.y + 0.15, impact.z, 64, 2.9, 0.18, 2.9, 0.015);
             if (sheltered(level, t.aim)) continue;
             for (ServerPlayer player : level.players()) {
                 if (!LunarDread.player(player) || player.position().distanceToSqr(t.aim) > RADIUS * RADIUS || sheltered(level, player.position())) continue;

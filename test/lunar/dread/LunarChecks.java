@@ -36,6 +36,14 @@ public final class LunarChecks {
         var savedDrops=new java.util.ArrayList<>(SupplyDrops.state(l).drops);SupplyDrops.state(l).drops.clear();
         var items=new java.util.ArrayList<Entity>();
         try{
+            var bookFactory=GuideBook.class.getDeclaredMethod("book",boolean.class);bookFactory.setAccessible(true);
+            var survivalBook=(net.minecraft.world.item.ItemStack)bookFactory.invoke(null,false);
+            var moonBook=(net.minecraft.world.item.ItemStack)bookFactory.invoke(null,true);
+            check(survivalBook.get(net.minecraft.core.component.DataComponents.WRITTEN_BOOK_CONTENT).pages().size()==14,
+                "The original survival handbook must remain fourteen pages");
+            check(moonBook.get(net.minecraft.core.component.DataComponents.WRITTEN_BOOK_CONTENT).pages().size()==10
+                &&moonBook.get(net.minecraft.core.component.DataComponents.CUSTOM_DATA).copyTag().getBoolean("lunar_dread.moon_codex"),
+                "The independent colored moon codex must be a real marked written book");
             reset(p);l.setDayTime(498000);MoonCycle.score(l,"#day",21);MoonCycle.score(l,"#safe_active",0);MoonCycle.score(l,"#finished",0);
             cycle.day=21;cycle.kind=MoonCycle.GRAVITY;cycle.forced=true;cycle.applied=true;cycle.nightAt=l.getGameTime();
             p.moveTo(Vec3.atBottomCenterOf(at));p.setOnGround(false);l.setBlockAndUpdate(roof,Blocks.STONE.defaultBlockState());

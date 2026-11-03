@@ -35,7 +35,7 @@ public final class MoonUpdates {
             b.writeVarInt(v.tumbling.size());for(var t:v.tumbling){b.writeVarInt(t.entity);b.writeLong(t.start);b.writeVarInt(t.duration);}
             b.writeBoolean(v.shell!=null); if (v.shell!=null) b.writeBlockPos(v.shell); b.writeVarInt(v.shellAge);
         }, b -> {
-            int kind=bounded(b,0,14),form=bounded(b,0,1),overlay=bounded(b,0,6);
+            int kind=bounded(b,0,MoonCycle.IDS.length-1),form=bounded(b,0,1),overlay=bounded(b,0,6);
             long tick=b.readLong(),awake=b.readLong(),night=b.readLong();
             int count=bounded(b,0,4); var drops=new ArrayList<Beacon>();
             for(int i=0;i<count;i++) drops.add(new Beacon(b.readBlockPos(),bounded(b,0,3),bounded(b,0,1)));

@@ -22,6 +22,7 @@ import net.neoforged.neoforge.client.event.ViewportEvent;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import lunar.dread.MoonNetwork;
+import lunar.dread.LunarDreadConfig;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 /** All effects are computed per frame; no mutation of EC settings or original moon assets. */
@@ -76,9 +77,9 @@ public final class MoonClient {
         return MoonAtmosphere.bloodSize(partial);
     }
     public static Vector3f color(float partial) {
-        if (phase() == 1) return new Vector3f(0.68f, 1, 0.76f);
-        if (phase() == 2) return new Vector3f(1, 0.94f, 0.58f);
-        if (phase() == 3) return new Vector3f(1, 0.68f, 0.23f);
+        if (phase() == 1) return new Vector3f(.48f, .012f, .055f);
+        if (phase() == 2) return new Vector3f(.84f, .025f, .075f);
+        if (phase() == 3) return new Vector3f(.95f, .045f, .065f);
         float breath = (float)((Math.sin(time(partial) * Math.PI * 2 / 140) + 1) * 0.5);
         return new Vector3f(0.34f + breath * 0.59f, 0.008f + breath * 0.035f, 0.025f + breath * 0.085f);
     }
@@ -111,12 +112,15 @@ public final class MoonClient {
         vertex(b,m,a,color,alpha); vertex(b,m,c,color,alpha); vertex(b,m,d,color,alpha); vertex(b,m,e,color,alpha);
     }
     static void ring(BufferBuilder b, Matrix4f m, Vec3 center, double radius, Vector3f color, float alpha) {
+        ring(b,m,center,radius,.11,color,alpha);
+    }
+    static void ring(BufferBuilder b, Matrix4f m, Vec3 center, double radius, double thickness, Vector3f color, float alpha) {
         for (int i = 0; i < 64; i++) {
             double a = i * Math.PI / 32, c = (i + 1) * Math.PI / 32;
             quad(b, m, center.add(Math.cos(a)*radius,0,Math.sin(a)*radius),
                 center.add(Math.cos(c)*radius,0,Math.sin(c)*radius),
-                center.add(Math.cos(c)*(radius-.11),0,Math.sin(c)*(radius-.11)),
-                center.add(Math.cos(a)*(radius-.11),0,Math.sin(a)*(radius-.11)), color, alpha);
+                center.add(Math.cos(c)*(radius-thickness),0,Math.sin(c)*(radius-thickness)),
+                center.add(Math.cos(a)*(radius-thickness),0,Math.sin(a)*(radius-thickness)), color, alpha);
         }
     }
     static void ray(BufferBuilder b, Matrix4f m, Vec3 from, Vec3 end, double width, Vector3f color, float alpha) {
@@ -141,16 +145,18 @@ public final class MoonClient {
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
         try {
             BufferBuilder b = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+            double beamScale=LunarDreadConfig.MOON_RAY_WIDTH_SCALE.get();
             for (var spot : state.spots()) {
                 Vec3 center = spot.aim().subtract(camera).add(0, 0.08, 0);
-                ring(b,matrix,center,3,color,0.8f);
-                ring(b,matrix,center.add(0,0.03,0),2.65 + 0.12 * Math.sin(time(0)*.15),color,0.42f);
+                ring(b,matrix,center,4.5,.2*beamScale,color,.9f);
+                ring(b,matrix,center.add(0,0.03,0),4.1 + 0.16 * Math.sin(time(0)*.15),.14*beamScale,color,.62f);
                 Vec3 from = moonDirection.scale(180);
                 Vec3 end = (phase() == 3 ? spot.impact() : spot.aim().add(0,1,0)).subtract(camera);
                 if (phase() == 3) {
-                    ray(b,matrix,from,end,.65,color,.26f);
-                    ray(b,matrix,from,end,.12,new Vector3f(1,1,.88f),.95f);
-                } else ray(b,matrix,from,end,.025,color,phase() == 2 ? .65f : .2f);
+                    ray(b,matrix,from,end,1.2*beamScale,new Vector3f(.31f,.005f,.025f),.55f);
+                    ray(b,matrix,from,end,.48*beamScale,color,.78f);
+                    ray(b,matrix,from,end,.17*beamScale,new Vector3f(1,.11f,.15f),.95f);
+                } else ray(b,matrix,from,end,(phase()==2?.085:.045)*beamScale,color,phase() == 2 ? .82f : .52f);
             }
             BufferUploader.drawWithShader(b.buildOrThrow());
         } finally {

@@ -11,8 +11,14 @@ public final class LunarDreadConfig {
     public static final ModConfigSpec.BooleanValue HORROR_ENCOUNTERS_ENABLED;
     public static final ModConfigSpec.BooleanValue HEARTBEAT_ENABLED;
     public static final ModConfigSpec.DoubleValue HEARTBEAT_VOLUME_SCALE;
+    public static final ModConfigSpec.BooleanValue SURVIVAL_BOOK_ON_JOIN;
+    public static final ModConfigSpec.BooleanValue MOON_BOOK_ON_JOIN;
     public static final ModConfigSpec.BooleanValue TENSION_MUSIC_ENABLED;
     public static final ModConfigSpec.DoubleValue TENSION_MUSIC_VOLUME_SCALE;
+    public static final ModConfigSpec.BooleanValue MOON_FOG_ENABLED;
+    public static final ModConfigSpec.DoubleValue MOON_FOG_DISTANCE_SCALE;
+    public static final ModConfigSpec.DoubleValue BLOOD_FOG_PEAK_DISTANCE;
+    public static final ModConfigSpec.DoubleValue MOON_RAY_WIDTH_SCALE;
 
     static {
         var server = new ModConfigSpec.Builder();
@@ -37,6 +43,12 @@ public final class LunarDreadConfig {
             .translation("lunar_dread.config.moon.heartbeatVolumeScale")
             .defineInRange("heartbeatVolumeScale", 1.0, 0.0, 2.0);
         server.pop();
+        server.push("books");
+        SURVIVAL_BOOK_ON_JOIN = server.comment("Give the original survival handbook once per player; the /lunardread guide command remains available.")
+            .define("survivalGuideOnFirstJoin", true);
+        MOON_BOOK_ON_JOIN = server.comment("Give the colored moon codex once per player; /lunardread guide moon remains available.")
+            .define("moonCodexOnFirstJoin", true);
+        server.pop();
         SERVER_SPEC = server.build();
 
         var client = new ModConfigSpec.Builder();
@@ -47,6 +59,16 @@ public final class LunarDreadConfig {
         TENSION_MUSIC_VOLUME_SCALE = client.comment("Local volume for the danger score; 0.0 is silent.")
             .translation("lunar_dread.config.audio.tensionMusicVolumeScale")
             .defineInRange("tensionMusicVolumeScale", 1.0, 0.0, 2.0);
+        client.pop();
+        client.push("visuals");
+        MOON_FOG_ENABLED = client.comment("Render phase-specific ground fog for all 15 moon phases. Sky and moon remain visible.")
+            .define("moonFogEnabled", true);
+        MOON_FOG_DISTANCE_SCALE = client.comment("Scales non-blood moon fog sight distance; smaller values produce thicker fog.")
+            .defineInRange("moonFogDistanceScale", 1.0, 0.5, 2.0);
+        BLOOD_FOG_PEAK_DISTANCE = client.comment("Surface sight distance at the blood moon's fog peak, in blocks; default 7.0.")
+            .defineInRange("bloodFogPeakDistance", 7.0, 4.0, 24.0);
+        MOON_RAY_WIDTH_SCALE = client.comment("Visual width of the moon strike beam and warning rings.")
+            .defineInRange("moonRayWidthScale", 1.0, 0.5, 2.0);
         client.pop();
         CLIENT_SPEC = client.build();
     }

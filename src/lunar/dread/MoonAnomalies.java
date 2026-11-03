@@ -35,7 +35,7 @@ import net.neoforged.neoforge.event.server.ServerStoppedEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import org.joml.Vector3f;
 
-/** Eight distinct event vocabularies with original actors, telegraphs and shared budgets. */
+/** Moon events with original actors, telegraphs and shared budgets. */
 public final class MoonAnomalies {
     static final class Event {
         UUID id=UUID.randomUUID(),player;int kind,age,triggerAge=-1;Vec3 origin,forward;boolean released,rewarded;final Set<UUID> hits=new HashSet<>();final List<UUID> actors=new ArrayList<>();final List<Vec3> replay=new ArrayList<>();
@@ -48,7 +48,7 @@ public final class MoonAnomalies {
     private static final List<Event> events=new ArrayList<>();
     private static final Map<UUID,ArrayDeque<Vec3>> trails=new HashMap<>();
     static State state(ServerLevel l){return l.getDataStorage().computeIfAbsent(new SavedData.Factory<>(State::new,State::load,null),"lunar_dread_lunar_events");}
-    private static Vector3f color(int kind){return switch(kind){case MoonCycle.PURPLE->new Vector3f(.6f,.12f,.9f);case MoonCycle.PALE->new Vector3f(.8f,.83f,.72f);case MoonCycle.MIRROR->new Vector3f(.38f,.47f,.55f);case MoonCycle.AMBER->new Vector3f(.95f,.52f,.05f);case MoonCycle.TIDE->new Vector3f(.05f,.6f,.6f);case MoonCycle.RUST->new Vector3f(.75f,.28f,.08f);default->new Vector3f(.7f,.43f,.57f);};}
+    private static Vector3f color(int kind){return switch(kind){case MoonCycle.PURPLE->new Vector3f(.6f,.12f,.9f);case MoonCycle.PALE->new Vector3f(.8f,.83f,.72f);case MoonCycle.MIRROR->new Vector3f(.38f,.47f,.55f);case MoonCycle.AMBER->new Vector3f(.95f,.52f,.05f);case MoonCycle.TIDE->new Vector3f(.05f,.6f,.6f);case MoonCycle.RUST->new Vector3f(.75f,.28f,.08f);case MoonCycle.ASH->new Vector3f(.9f,.3f,.07f);default->new Vector3f(.7f,.43f,.57f);};}
     private static void ring(ServerLevel l,Vec3 center,double radius,int kind){var dust=new DustParticleOptions(color(kind),1.2f);for(int i=0;i<40;i++){double a=i*Math.PI/20;l.sendParticles(dust,center.x+Math.cos(a)*radius,center.y+.12,center.z+Math.sin(a)*radius,1,0,0,0,0);}}
     static Mob spawn(ServerLevel l,Event event,EntityType<? extends Mob> type,Vec3 desired,String role){
         int total=0,lunar=0;for(var e:l.getAllEntities())if(e instanceof Enemy){total++;if(e.getTags().contains("lunar_dread.lunar"))lunar++;}
@@ -148,6 +148,24 @@ public final class MoonAnomalies {
                 p.playNotifySound(SoundEvents.BOOK_PAGE_TURN,SoundSource.HOSTILE,1,.5f);
             }
             if(v.released&&age==v.triggerAge+40)for(var id:v.actors)if(l.getEntity(id) instanceof Mob mob){mob.setNoAi(false);mob.setTarget(p);}
+        }else if(v.kind==MoonCycle.ASH){
+            // Three marked cinder falls; standing under the ring is the player's choice.
+            if(age==60)spawn(l,v,EntityType.BLAZE,v.origin,"cinder_sentry");
+            if(age==80||age==160||age==240){
+                var spot=SurvivalRules.surface(l,p.getBlockX(),p.getBlockZ());
+                if(spot!=null)v.origin=Vec3.atBottomCenterOf(spot);
+                l.playSound(null,BlockPos.containing(v.origin),SoundEvents.FIRECHARGE_USE,SoundSource.HOSTILE,.75f,.65f);
+            }
+            if((age>=80&&age<100)||(age>=160&&age<180)||(age>=240&&age<260)){
+                if(age%4==0){ring(l,v.origin,3,v.kind);l.sendParticles(ParticleTypes.ASH,v.origin.x,v.origin.y+4,v.origin.z,8,2,1,2,.03);}
+            }
+            if(age==100||age==180||age==260){
+                l.sendParticles(ParticleTypes.FLAME,v.origin.x,v.origin.y+.5,v.origin.z,34,2,1,2,.08);
+                if(free)for(var target:l.players())if(exposed(target,v)&&target.position().distanceToSqr(v.origin)<9&&
+                    l.clip(new ClipContext(v.origin.add(0,2,0),target.getEyePosition(),ClipContext.Block.COLLIDER,ClipContext.Fluid.NONE,target)).getType()==HitResult.Type.MISS){
+                    target.hurt(l.damageSources().magic(),3);target.setRemainingFireTicks(40);
+                }
+            }
         }
         if(age==400&&v.kind==MoonCycle.PALE&&p.getPersistentData().getInt("lunar_dread.noise")<4){if(!p.hasEffect(MobEffects.NIGHT_VISION))p.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION,220,0,false,false));reward(l,v,p.position());}
     }

@@ -25,6 +25,8 @@ import net.neoforged.neoforge.client.event.*;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.joml.Vector3f;
 import lunar.dread.MoonCycle;
+import lunar.dread.LunarDreadConfig;
+import lunar.dread.MoonFogProfile;
 import lunar.dread.MoonUpdates;
 
 /** Local visual state never changes controls, system brightness or the chosen server event. */
@@ -63,6 +65,9 @@ public final class MoonAtmosphere {
     public static Vector3f tint(float partial){
         float b=(float)(.5+.5*Math.sin(clock(partial)*Math.PI/70));
         return switch(kind()){
+            case MoonCycle.NORMAL->new Vector3f(.42f,.48f,.58f);
+            case MoonCycle.HARVEST->new Vector3f(.78f,.57f,.27f);
+            case MoonCycle.BLUE->new Vector3f(.28f,.48f,.82f);
             case MoonCycle.PURPLE->new Vector3f(.35f+b*.2f,.015f,.6f+b*.25f);
             case MoonCycle.PALE->new Vector3f(.78f,.82f,.69f);
             case MoonCycle.MIRROR->new Vector3f(.12f,.18f,.24f);
@@ -71,6 +76,7 @@ public final class MoonAtmosphere {
             case MoonCycle.TIDE->new Vector3f(.05f,.5f,.57f);
             case MoonCycle.RUST->new Vector3f(.65f,.2f,.035f);
             case MoonCycle.PAPER->new Vector3f(.66f,.36f,.5f);
+            case MoonCycle.ASH->new Vector3f(.82f,.27f,.09f);
             case MoonCycle.WIND->new Vector3f(.5f,.88f,.85f);
             case MoonCycle.GREEN->new Vector3f(.24f,.75f,.35f);
             case MoonCycle.STAR->new Vector3f(.55f,.73f,1);
@@ -117,24 +123,23 @@ public final class MoonAtmosphere {
     }
     @SubscribeEvent public static void poseEnd(RenderLivingEvent.Post<?,?> e){if(rotated.remove(e.getEntity().getId()))e.getPoseStack().popPose();}
     @SubscribeEvent public static void fog(ViewportEvent.ComputeFogColor e){
-        if(!special())return;var mc=Minecraft.getInstance();if(mc.gameRenderer.getMainCamera().getFluidInCamera()!=FogType.NONE)return;
-        var c=tint((float)e.getPartialTick());float g=growth((float)e.getPartialTick());
-        float weight=kind()==MoonCycle.BLOOD?.62f+.22f*g:.45f;
-        if(kind()==MoonCycle.BLOOD){
-            // Fog must remain visibly crimson in an unlit world. Do not rely
-            // on The Hordes' independent red sky overlay to supply this colour.
-            e.setRed(e.getRed()*(1-weight)+.075f+.13f*g+c.x*(.1f+.08f*g));
-            e.setGreen(e.getGreen()*(1-weight)+.004f+c.y*.025f);
-            e.setBlue(e.getBlue()*(1-weight)+.012f+c.z*.04f);
-        }else{
-            e.setRed(e.getRed()*(1-weight)+c.x*.09f);e.setGreen(e.getGreen()*(1-weight)+c.y*.04f);e.setBlue(e.getBlue()*(1-weight)+c.z*.07f);
-        }
+        var mc=Minecraft.getInstance();if(mc.level==null||!LunarDreadConfig.MOON_FOG_ENABLED.get()||mc.gameRenderer.getMainCamera().getFluidInCamera()!=FogType.NONE)return;
+        float strength=MoonFogProfile.intensity(mc.level.getDayTime());if(strength<=0)return;
+        int phase=kind();var c=tint((float)e.getPartialTick());
+        float weight=MoonFogProfile.colorWeight(phase,strength);
+        float red=phase==MoonCycle.BLOOD?.22f:c.x*.48f;
+        float green=phase==MoonCycle.BLOOD?.008f:c.y*.48f;
+        float blue=phase==MoonCycle.BLOOD?.022f:c.z*.48f;
+        e.setRed(Mth.lerp(weight,e.getRed(),red));
+        e.setGreen(Mth.lerp(weight,e.getGreen(),green));
+        e.setBlue(Mth.lerp(weight,e.getBlue(),blue));
     }
     @SubscribeEvent public static void fogDistance(ViewportEvent.RenderFog e){
-        if(!special()||e.getType()!=FogType.NONE||e.getMode()!=net.minecraft.client.renderer.FogRenderer.FogMode.FOG_TERRAIN)return;
-        float g=growth((float)e.getPartialTick());var profile=lunar.dread.BloodFogProfile.range(g,fogDepth);
-        e.setNearPlaneDistance(Math.min(e.getNearPlaneDistance(),kind()==MoonCycle.BLOOD?profile.near():26));
-        e.setFarPlaneDistance(Math.min(e.getFarPlaneDistance(),kind()==MoonCycle.BLOOD?profile.far():112));e.setCanceled(true);
+        var mc=Minecraft.getInstance();if(mc.level==null||!LunarDreadConfig.MOON_FOG_ENABLED.get()||e.getType()!=FogType.NONE||e.getMode()!=net.minecraft.client.renderer.FogRenderer.FogMode.FOG_TERRAIN)return;
+        float strength=MoonFogProfile.intensity(mc.level.getDayTime());if(strength<=0)return;
+        var profile=MoonFogProfile.range(kind(),fogDepth,strength,e.getNearPlaneDistance(),e.getFarPlaneDistance(),
+            LunarDreadConfig.BLOOD_FOG_PEAK_DISTANCE.get().floatValue(),LunarDreadConfig.MOON_FOG_DISTANCE_SCALE.get().floatValue());
+        e.setNearPlaneDistance(profile.near());e.setFarPlaneDistance(profile.far());e.setCanceled(true);
     }
     private static MoonUpdates.Beacon nearest(){
         var mc=Minecraft.getInstance();if(!current()||mc.player==null)return null;MoonUpdates.Beacon nearest=null;double best=Double.MAX_VALUE;

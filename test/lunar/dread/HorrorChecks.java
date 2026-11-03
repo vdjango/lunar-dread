@@ -30,6 +30,17 @@ public final class HorrorChecks {
             check(BloodHuntDirector.threshold(1,1)==3000&&BloodHuntDirector.threshold(100,20)==1500,"Hunt countdown must accelerate and retain a seventy-five-second floor");
             check(BloodFogProfile.range(0,0).far()==32&&BloodFogProfile.range(1,0).far()==24&&BloodFogProfile.range(1,1).far()==7,"Blood fog must retain distinct surface and deep ranges");
             check(BloodFogProfile.range(0,.08f).far()==28&&BloodFogProfile.range(1,.5f).far()==14,"Wooden shelter and shallow cave need their own continuous fog ranges");
+            check(MoonFogProfile.intensity(13000)==0&&MoonFogProfile.intensity(18000)==1&&MoonFogProfile.intensity(24000)==0,
+                "Every lunar fog must grow after dusk, peak near midnight and clear by dawn");
+            check(MoonCycle.IDS.length==16&&MoonCycle.NAMES.length==16&&LunarCommands.EVENTS.contains("anomaly.ash"),
+                "All sixteen phases must have names and the ash moon must expose its event command");
+            check(MoonFogProfile.intensity(15000)<MoonFogProfile.intensity(17000)&&MoonFogProfile.intensity(22000)<MoonFogProfile.intensity(20000),
+                "Night fog must rise and fall rather than appearing at full strength instantly");
+            check(Math.abs(MoonFogProfile.range(MoonCycle.BLOOD,0,1,0,128,7,1).far()-7)<.01f
+                &&MoonFogProfile.range(MoonCycle.BLOOD,1,1,0,128,7,1).far()<4,
+                "Peak blood fog must obscure the road at seven blocks and be denser underground");
+            for(int phase=0;phase<MoonCycle.IDS.length;phase++)
+                check(MoonFogProfile.range(phase,0,1,0,128,7,1).far()<128,"Every moon phase needs its own ground fog");
             MoonGravity.clear(l);p.getPersistentData().putBoolean("lunar_dread.gravity_falling",false);p.stopRiding();
             var m=MoonContent.SNATCHER.get().create(l);m.moveTo(261,100,260.5);m.setNoAi(true);l.addFreshEntity(m);mobs.add(m);unlock();
             check(AbductionController.capture(m,p)&&p.getVehicle()==m&&m.phase()==2,"Grab must use a real native carrier; busy="+MoonIncidents.busy(p)+" los="+m.hasLineOfSight(p)+" available="+AbductionController.available(l)+" passenger="+p.isPassenger());

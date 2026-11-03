@@ -5,7 +5,7 @@ issueTrackerURL="https://github.com/vdjango/lunar-dread/issues"
 
 [[mods]]
 modId="lunar_dread"
-version="0.11.3"
+version="0.11.4"
 displayName="Lunar Dread | 月魇"
 displayURL="https://github.com/vdjango/lunar-dread"
 description="A lunar horror mod with 15 moon variants, living blood moon attacks, gravity anomalies, creatures and configurable encounters. Features atmospheric audio, hostile wildlife and guarded supplies. Requires Enhanced Celestials and Stellar View."

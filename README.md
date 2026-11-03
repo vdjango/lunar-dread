@@ -8,7 +8,7 @@
 [![NeoForge](https://img.shields.io/badge/NeoForge-21.1.265-EF7E32?style=flat-square)](#安装)
 [![Java](https://img.shields.io/badge/Java-21-437291?style=flat-square)](#从源码构建)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue?style=flat-square)](LICENSE)
-[![Status](https://img.shields.io/badge/Status-Preview-B85C38?style=flat-square)](#项目状态)
+[![Status](https://img.shields.io/badge/Status-Preview-B85C38?style=flat-square)](#已知限制)
 
 [源码](https://github.com/vdjango/lunar-dread) · [发行版](https://github.com/vdjango/lunar-dread/releases) · [报告问题](https://github.com/vdjango/lunar-dread/issues) · [参与贡献](CONTRIBUTING.md)
 
@@ -18,32 +18,33 @@ Lunar Dread 是面向 **Minecraft 1.21.1 / NeoForge** 的月相恐怖模组。�
 
 ## 实机预览
 
-以下画面来自 Minecraft 客户端实测，并非概念图。月面、怪物与动物画面摄于此前的验证版本；本次调整的深红射线和逐夜浓雾需要重新实拍，不能把旧图当成新效果验收。
+Minecraft 1.21.1 客户端实拍：月相、失重、异体、动物技能与空投。GIF 无声，可[试听心跳](docs/audio/heart.ogg)。
 
-| 常态血月 | 凝望后的巨月 |
+| 十六月相 | 巨月心跳 |
 |---|---|
-| ![常态血月](docs/images/moon-blood.png) | ![巨月占据夜空](docs/images/moon-giant.png) |
-| 血月中的地面 | 失重中的玩家 |
-| ![血月世界](docs/images/moon-world.png) | ![玩家失重翻滚](docs/images/gravity-tumble.png) |
+| ![十六月相实机切换](docs/images/moon-phases.gif) | ![血月巨月脉动](docs/images/giant-heartbeat.gif) |
+| 血月浓雾 | 深红月面射线 |
+| ![午夜血月地面浓雾](docs/images/moon-fog.png) | ![月面射线的预警与攻击](docs/images/red-ray.gif) |
+| 失重翻滚 | 怪物掳走 |
+| ![玩家失重翻滚](docs/images/gravity-tumble.gif) | ![玩家被怪物掳走](docs/images/abduction-motion.gif) |
 | 原创恐怖实体 | 月相专属异体 |
 | ![五类原创怪物](docs/images/monsters-original.png) | ![月相异体](docs/images/monsters-lunar.png) |
 | 山羊喷火 | 绵羊吐 TNT |
-| ![山羊喷火连续帧](docs/images/goat-fire.jpg) | ![绵羊吐 TNT 连续帧](docs/images/sheep-tnt.jpg) |
-| 羊驼扇形 TNT | 被怪物掳走 |
-| ![羊驼扇形 TNT 连续帧](docs/images/llama-tnt.jpg) | ![第一人称被掳走](docs/images/abduction.png) |
-
-![真实降落的补给货箱](docs/images/supply-crate.png)
-
-截图使用验证世界，其中部分怪物曾固定站位以便拍摄；长期多人游戏的实际生成密度会不同。
+| ![山羊喷火](docs/images/goat-fire.gif) | ![绵羊吐 TNT](docs/images/sheep-tnt.gif) |
+| 羊驼扇形 TNT | 鸡的危险蛋 |
+| ![羊驼扇形 TNT](docs/images/llama-tnt.gif) | ![鸡下蛋与爆炸](docs/images/chicken-egg.gif) |
+| 常态血月 | 降落的补给货箱 |
+| ![常态血月](docs/images/moon-blood.png) | ![降落的补给货箱](docs/images/supply-crate.png) |
 
 ## 功能
 
-- **15 种月相**：和平增益、血月与主题异变，支持管理员手动切换。
+- **16 种月相**：和平增益、血月与主题异变，支持管理员手动切换。
 - **活体血月**：常态与巨月形态、月面脉动、沉闷心跳、凝望追猎与带预警的月面射线。
 - **异常重力**：实体失重、横向姿态、视角翻滚、漂浮物与队友的鱼钩救援。
 - **原创遭遇**：追猎、掳走、挖掘、屋檐窥视、空中追击及月相异体。
 - **异常动物**：基于原生实体 AI 的追击、前摇和技能，限制距离、冷却与数量。
 - **守卫空投**：真实降落的货箱、坐标和方向指引、击败守卫后领取武器与物资。
+- **两本手册**：求生手册说明生存准备；彩字《月相异闻录》介绍十六种月相。
 - **声音和配置**：空间音效、紧张配乐、TOML 配置与 /lunardread 管理工具。
 
 ## 安装
@@ -70,6 +71,8 @@ Lunar Dread 是面向 **Minecraft 1.21.1 / NeoForge** 的月相恐怖模组。�
 
 管理员使用 /lunardread moon set &lt;id&gt; 指定月相。
 
+所有月相都有自己的雾色。雾在入夜后渐浓，午夜最重，黎明散去；血月最浓时地表只能看清约 7 格，地下更近。月面不受地面雾遮挡。
+
 | ID | 月相 | 主要效果与遭遇 |
 |---|---|---|
 | normal | 普通月 | 常规月夜与基础遭遇。 |
@@ -87,8 +90,9 @@ Lunar Dread 是面向 **Minecraft 1.21.1 / NeoForge** 的月相恐怖模组。�
 | tide | 青潮月 | 空间潮汐推移和减速玩家。 |
 | rust | 锈雨月 | 磁簇牵引与锈蚀主题攻击。 |
 | paper | 纸幕月 | 假象与幕后的异体。 |
+| ash | 灰烬月 | 灰烬雾中出现火焰守卫；地面火圈预警后坠下余烬。 |
 
-和平月不关闭原版生存风险。部分自动机制读取外部日历或进度数据；当前源码尚未包含通用的独立进度初始化器，详见[项目状态](#项目状态)。
+和平月仍保留普通生存风险。
 
 ## 命令
 
@@ -122,7 +126,7 @@ Lunar Dread 是面向 **Minecraft 1.21.1 / NeoForge** 的月相恐怖模组。�
 |---|---|
 | 月面与玩家 | moon.strike、moon.gaze、moon.blackout、moon.gravity、moon.contact、blood.hunt、air.raid、player.cure |
 | 空投 | supply.guarded、supply.rich、supply.star |
-| 主题异变 | anomaly.purple、anomaly.pale、anomaly.mirror、anomaly.amber、anomaly.tide、anomaly.rust、anomaly.paper |
+| 主题异变 | anomaly.purple、anomaly.pale、anomaly.mirror、anomaly.amber、anomaly.tide、anomaly.rust、anomaly.paper、anomaly.ash |
 | 基础异体 | creature.skin_hauler、creature.spine_digger、creature.bent_beam、creature.eave_watcher、creature.tether_wing |
 | 月相异体 | creature.rift_warden、creature.stitched_beast、creature.listener、creature.hollow、creature.reflection、creature.late_shadow、creature.tide_walker、creature.chorus、creature.magnet_cluster、creature.porter、creature.backstage_hand、creature.paper_walker、creature.star_jelly、creature.suspended |
 
@@ -140,10 +144,13 @@ Lunar Dread 是面向 **Minecraft 1.21.1 / NeoForge** 的月相恐怖模组。�
 | /lunardread supply track | 玩家 | 切换方向指引。 |
 | /lunardread supply spawn | 管理员 | 寻找已加载的落点并投放。 |
 | /lunardread guide | 玩家 | 获取求生手册。 |
+| /lunardread guide moon | 玩家 | 获取彩字《月相异闻录》。 |
 | /lunardread sound test &lt;id&gt; | 玩家 | 试听指定音效。 |
 | /lunardread config | 管理员 | 查看服务端配置。 |
 
 可试听的声音 ID：heart、tension、whisper、rift、scrape、grab、silence。心跳与效果音受“敌对生物”音量影响。
+
+首次进入世界时会收到两本书。两本书均由 Lunar Dread 自行生成；月相书的文字和颜色位于 resources/lunar_dread/moon_codex.json。
 
 ## 空投奖励
 
@@ -168,8 +175,14 @@ NeoForge 首次加载后生成 config/lunar_dread-server.toml 和 config/lunar_d
 | server | encounters.horrorEnabled | true | 原创恐怖遭遇开关 |
 | server | moon.heartbeatEnabled | true | 心跳开关 |
 | server | moon.heartbeatVolumeScale | 1.0 | 心跳音量倍率，0.0–2.0 |
+| server | books.survivalGuideOnFirstJoin | true | 首次进入时发放求生手册 |
+| server | books.moonCodexOnFirstJoin | true | 首次进入时发放月相书 |
 | client | audio.tensionMusicEnabled | true | 紧张配乐开关 |
 | client | audio.tensionMusicVolumeScale | 1.0 | 配乐音量倍率，0.0–2.0 |
+| client | visuals.moonFogEnabled | true | 月相地面雾开关 |
+| client | visuals.moonFogDistanceScale | 1.0 | 非血月雾视距倍率，0.5–2.0 |
+| client | visuals.bloodFogPeakDistance | 7.0 | 血月浓雾峰值地表视距，4–24 格 |
+| client | visuals.moonRayWidthScale | 1.0 | 月面射线宽度倍率，0.5–2.0 |
 
 管理员可在游戏中保存部分配置：
 
@@ -204,7 +217,7 @@ Linux/macOS 示例：
     export LUNAR_DREAD_DEPENDENCY_DIR=/path/to/dependency-jars
     python3 build.py
 
-输出为 dist/lunar-dread-0.11.3.jar。音效与材质已包含在 resources/，常规构建无需重新生成。
+输出为 dist/lunar-dread-0.11.4.jar。音效与材质已包含在 resources/，常规构建无需重新生成。
 
     src/lunar/dread/    Java 源码与客户端实现
     resources/         语言、声音、模型、Mixin 和手册
@@ -212,11 +225,9 @@ Linux/macOS 示例：
     test/              隔离环境使用的回归夹具
     build.py           本地构建入口
 
-## 项目状态
+## 已知限制
 
-当前为 **Preview**。源码、配置、月相与事件命令已提供；移除外部月相依赖、独立进度初始化与通用日历仍在整理。部分逻辑读取 lunar_dread.sys 计分板的世界进度；当前单独安装尚不等于所有自动事件开箱即用，手动切换也要求世界进度已初始化。
-
-已完成 Java 编译、15 种月相命令切换、配置保存、隔离环境下的地下遭遇、方块复原、僵尸转化以及客户端主菜单加载检查。仓库没有公开 CI；部分历史测试夹具依赖本地环境，这些检查不能代替多人长期性能或完整玩法验收。
+当前版本的自动事件读取 lunar_dread.sys 世界进度。单独安装时需要先初始化进度；独立日历尚未加入模组。完整依赖列表见[安装](#安装)。
 
 ## 问题反馈与贡献
 
