@@ -96,6 +96,12 @@ public final class MoonVisualProbe {
             }
             float size=net.povstalec.stellarview.compatibility.enhancedcelestials.EnhancedCelestialsCompatibility.getMoonSize(mc.level,20);
             System.out.println("MOON_VISUAL_FRAME "+label+" active="+MoonClient.active(mc.level)+" phase="+MoonClient.phase()+" size="+size+" dir="+MoonClient.moonDirection+" gaze="+MoonClient.gaze()+" mark="+MoonClient.mark());
+            var eye=mc.gameRenderer.getMainCamera().getPosition();
+            var exposure=lunar.dread.MoonFogProfile.exposure(mc.level,net.minecraft.core.BlockPos.containing(eye),eye.y,
+                lunar.dread.LunarDreadConfig.MOON_FOG_LAYER_HEIGHT.get().floatValue(),lunar.dread.LunarDreadConfig.MOON_FOG_TOP_FADE.get().floatValue());
+            System.out.println("LUNAR_FOG "+label+" kind="+lunar.dread.client.MoonAtmosphere.kind()+" layer="+exposure.layer()+" cave="+exposure.cave()
+                +" surface="+mc.level.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.WORLD_SURFACE,(int)eye.x,(int)eye.z)
+                +" eye="+eye.y+" time="+mc.level.getDayTime());
             System.out.println("LUNAR_CLIENT "+label+" pos="+mc.player.position()+" velocity="+mc.player.getDeltaMovement()+" force="+lunar.dread.client.MoonAtmosphere.force(mc.player)+" tumble="+lunar.dread.client.MoonAtmosphere.tumbleAge(mc.player,0)+" pose="+mc.player.getPose()+" blackout="+lunar.dread.client.MoonAtmosphere.blackout(0));
             dev.corgitaco.enhancedcelestials.EnhancedCelestials.lunarForecastWorldData(mc.level).ifPresent(data->System.out.println("LUNAR_SKY "+label+" event="+data.currentLunarEventHolder().unwrapKey()+" blend="+data.getBlend()+" sky="+mc.level.getSkyColor(mc.player.getEyePosition(),0)+" time="+mc.level.getDayTime()));
             if (control.has("frames")) {

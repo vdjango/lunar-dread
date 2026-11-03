@@ -18,6 +18,16 @@ public final class LunarDreadConfig {
     public static final ModConfigSpec.BooleanValue MOON_FOG_ENABLED;
     public static final ModConfigSpec.DoubleValue MOON_FOG_DISTANCE_SCALE;
     public static final ModConfigSpec.DoubleValue BLOOD_FOG_PEAK_DISTANCE;
+    public static final ModConfigSpec.DoubleValue MOON_FOG_LAYER_HEIGHT;
+    public static final ModConfigSpec.DoubleValue MOON_FOG_TOP_FADE;
+    public static final ModConfigSpec.DoubleValue BLOOD_CAVE_FOG_DISTANCE;
+    public static final ModConfigSpec.DoubleValue OTHER_CAVE_FOG_SCALE;
+    public static final ModConfigSpec.DoubleValue MOON_FOG_COLOR_STRENGTH;
+    public static final ModConfigSpec.DoubleValue MOON_FOG_COLOR_BRIGHTNESS;
+    public static final ModConfigSpec.IntValue MOON_FOG_DUSK_START;
+    public static final ModConfigSpec.IntValue MOON_FOG_PEAK_START;
+    public static final ModConfigSpec.IntValue MOON_FOG_PEAK_END;
+    public static final ModConfigSpec.IntValue MOON_FOG_DAWN_END;
     public static final ModConfigSpec.DoubleValue MOON_RAY_WIDTH_SCALE;
 
     static {
@@ -67,6 +77,26 @@ public final class LunarDreadConfig {
             .defineInRange("moonFogDistanceScale", 1.0, 0.5, 2.0);
         BLOOD_FOG_PEAK_DISTANCE = client.comment("Surface sight distance at the blood moon's fog peak, in blocks; default 7.0.")
             .defineInRange("bloodFogPeakDistance", 7.0, 4.0, 24.0);
+        MOON_FOG_LAYER_HEIGHT = client.comment("Fog bank height above the local ground, in blocks. Caves ignore this limit.")
+            .defineInRange("moonFogLayerHeight", 12.0, 4.0, 64.0);
+        MOON_FOG_TOP_FADE = client.comment("Height of the soft fade at the top of the fog bank, in blocks.")
+            .defineInRange("moonFogTopFade", 2.0, 0.5, 8.0);
+        BLOOD_CAVE_FOG_DISTANCE = client.comment("Blood moon cave sight distance at peak, in blocks; default 5.0.")
+            .defineInRange("bloodCaveFogDistance", 5.0, 2.5, 16.0);
+        OTHER_CAVE_FOG_SCALE = client.comment("Scales the 8-12 block cave sight distances of other moon phases.")
+            .defineInRange("otherCaveFogDistanceScale", 1.0, 0.5, 2.0);
+        MOON_FOG_COLOR_STRENGTH = client.comment("Strength of each moon's dark fog color; 1.0 is the designed intensity.")
+            .defineInRange("moonFogColorStrength", 1.0, 0.5, 1.5);
+        MOON_FOG_COLOR_BRIGHTNESS = client.comment("Brightness of the fog's phase color; smaller values make darker fog without changing sight distance.")
+            .defineInRange("moonFogColorBrightness", 0.3, 0.05, 0.8);
+        MOON_FOG_DUSK_START = client.comment("Night tick when surface fog begins to grow. Cave fog grows faster.")
+            .defineInRange("moonFogDuskStart", 13000, 13000, 15000);
+        MOON_FOG_PEAK_START = client.comment("Night tick when fog first reaches full density.")
+            .defineInRange("moonFogPeakStart", 17500, 16500, 18000);
+        MOON_FOG_PEAK_END = client.comment("Night tick when full density ends and fog starts clearing.")
+            .defineInRange("moonFogPeakEnd", 19500, 19000, 20500);
+        MOON_FOG_DAWN_END = client.comment("Night tick when fog has cleared completely; 24000 is sunrise.")
+            .defineInRange("moonFogDawnEnd", 24000, 23000, 24000);
         MOON_RAY_WIDTH_SCALE = client.comment("Visual width of the moon strike beam and warning rings.")
             .defineInRange("moonRayWidthScale", 1.0, 0.5, 2.0);
         client.pop();

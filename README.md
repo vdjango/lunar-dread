@@ -25,6 +25,8 @@ Minecraft 1.21.1 客户端实拍：月相、失重、异体、动物技能与空
 | ![十六月相实机切换](docs/images/moon-phases.gif) | ![血月巨月脉动](docs/images/giant-heartbeat.gif) |
 | 血月浓雾 | 深红月面射线 |
 | ![午夜血月地面浓雾](docs/images/moon-fog.png) | ![月面射线的预警与攻击](docs/images/red-ray.gif) |
+| 血月地下雾 | 紫狱月地下雾 |
+| ![血月石顶下的浓雾](docs/images/moon-cave-fog.png) | ![紫狱月石顶下的浓雾](docs/images/moon-purple-cave-fog.png) |
 | 失重翻滚 | 怪物掳走 |
 | ![玩家失重翻滚](docs/images/gravity-tumble.gif) | ![玩家被怪物掳走](docs/images/abduction-motion.gif) |
 | 原创恐怖实体 | 月相专属异体 |
@@ -71,7 +73,11 @@ Minecraft 1.21.1 客户端实拍：月相、失重、异体、动物技能与空
 
 管理员使用 /lunardread moon set &lt;id&gt; 指定月相。
 
-所有月相都有自己的雾色。雾在入夜后渐浓，午夜最重，黎明散去；血月最浓时地表只能看清约 7 格，地下更近。月面不受地面雾遮挡。
+所有月相都有自己的深色雾。雾贴着当地地表，默认覆盖地表向上约 12 格，上沿渐隐；走到高处会脱离雾层。地表入夜后渐浓，午夜最重，黎明散尽；天然洞穴的雾更早变浓，白天同样散尽。血月峰值时地表约 7 格、地下约 5 格以外被雾遮住；其他月相的地下视距为 8–12 格，翠息月的挖掘增益仍然有效。月面不受地面雾遮挡。
+
+地下默认视距：普通、丰收、蓝、翠息、星砂月 12 格；旅风月 11 格；苍白、琥珀、青潮月 10 格；倒悬、锈雨、灰烬月 9 格；紫狱、黑镜、纸幕月 8 格；血月 5 格。
+
+雾高以所在地面的高度为基准，随山坡、高原和低谷变化，树冠和常见木质、砖质屋顶不抬高雾层。洞穴按石土覆盖识别，不受地表雾层高度限制。
 
 | ID | 月相 | 主要效果与遭遇 |
 |---|---|---|
@@ -182,7 +188,19 @@ NeoForge 首次加载后生成 config/lunar_dread-server.toml 和 config/lunar_d
 | client | visuals.moonFogEnabled | true | 月相地面雾开关 |
 | client | visuals.moonFogDistanceScale | 1.0 | 非血月雾视距倍率，0.5–2.0 |
 | client | visuals.bloodFogPeakDistance | 7.0 | 血月浓雾峰值地表视距，4–24 格 |
+| client | visuals.moonFogLayerHeight | 12.0 | 地表雾层高度，4–64 格 |
+| client | visuals.moonFogTopFade | 2.0 | 雾层顶部渐隐高度，0.5–8 格 |
+| client | visuals.bloodCaveFogDistance | 5.0 | 血月地下峰值视距，2.5–16 格 |
+| client | visuals.otherCaveFogDistanceScale | 1.0 | 其他月相地下视距倍率，0.5–2.0 |
+| client | visuals.moonFogColorStrength | 1.0 | 深色雾颜色强度，0.5–1.5 |
+| client | visuals.moonFogColorBrightness | 0.3 | 雾色亮度，0.05–0.8；越小越深，不改变视距 |
+| client | visuals.moonFogDuskStart | 13000 | 入夜起雾时间，13000–15000 tick |
+| client | visuals.moonFogPeakStart | 17500 | 满雾开始时间，16500–18000 tick |
+| client | visuals.moonFogPeakEnd | 19500 | 满雾结束时间，19000–20500 tick |
+| client | visuals.moonFogDawnEnd | 24000 | 雾完全消散时间，23000–24000 tick |
 | client | visuals.moonRayWidthScale | 1.0 | 月面射线宽度倍率，0.5–2.0 |
+
+完整客户端配置示例见 [examples/lunar_dread-client.toml](examples/lunar_dread-client.toml)。可复制到实例的 config/ 目录修改；洞穴雾视距倍率不影响地表，血月地下视距由独立参数控制。四个时间参数的取值范围保证顺序正确。
 
 管理员可在游戏中保存部分配置：
 
@@ -217,10 +235,11 @@ Linux/macOS 示例：
     export LUNAR_DREAD_DEPENDENCY_DIR=/path/to/dependency-jars
     python3 build.py
 
-输出为 dist/lunar-dread-0.11.4.jar。音效与材质已包含在 resources/，常规构建无需重新生成。
+输出为 dist/lunar-dread-0.11.5.jar。音效与材质已包含在 resources/，常规构建无需重新生成。
 
     src/lunar/dread/    Java 源码与客户端实现
     resources/         语言、声音、模型、Mixin 和手册
+    examples/          可复制的客户端 TOML 配置
     META-INF/          NeoForge 元数据与依赖声明
     test/              隔离环境使用的回归夹具
     build.py           本地构建入口
@@ -228,6 +247,8 @@ Linux/macOS 示例：
 ## 已知限制
 
 当前版本的自动事件读取 lunar_dread.sys 世界进度。单独安装时需要先初始化进度；独立日历尚未加入模组。完整依赖列表见[安装](#安装)。
+
+雾层按观察点相对当地地表的高度衰减。洞穴识别依据石土覆盖，人工厚石顶也可能使用洞穴视距。
 
 ## 问题反馈与贡献
 

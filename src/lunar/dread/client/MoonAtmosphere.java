@@ -38,7 +38,7 @@ public final class MoonAtmosphere {
     private static long worldAt,personalAt;
     private static boolean menu;
     private static float roll,pitch,oldRoll,oldPitch;
-    private static float fogDepth,fogTarget;
+    private static float fogLayer=1,fogLayerTarget=1,fogCave,fogCaveTarget;
     private static long navUntil;
     private static boolean navAlways;
     private static int navHash;
@@ -97,10 +97,24 @@ public final class MoonAtmosphere {
         for(var t:world.tumbling())if(t.entity()==entity.getId())return(float)(clock(partial)-t.start());
         return -1;
     }
+    private static float fogStrength(ClientLevel level){
+        if(level.dimension()!=Level.OVERWORLD)return 0;
+        float night=MoonFogProfile.intensity(level.getDayTime(),LunarDreadConfig.MOON_FOG_DUSK_START.get(),
+            LunarDreadConfig.MOON_FOG_PEAK_START.get(),LunarDreadConfig.MOON_FOG_PEAK_END.get(),
+            LunarDreadConfig.MOON_FOG_DAWN_END.get());
+        return MoonFogProfile.strength(night,fogLayer,fogCave);
+    }
     @SubscribeEvent public static void tick(ClientTickEvent.Post e){
         var mc=Minecraft.getInstance();if(mc.player==null)return;
-        if(mc.level.getGameTime()%10==0)fogTarget=lunar.dread.BloodFogProfile.depth(mc.level,mc.player.blockPosition());
-        fogDepth=Mth.lerp(.025f,fogDepth,fogTarget);
+        if(mc.level.dimension()==Level.OVERWORLD&&LunarDreadConfig.MOON_FOG_ENABLED.get()&&mc.level.getGameTime()%10==0){
+            var eye=mc.gameRenderer.getMainCamera().getPosition();
+            if(eye.distanceToSqr(mc.player.getEyePosition())>4096)eye=mc.player.getEyePosition();
+            var exposure=MoonFogProfile.exposure(mc.level,net.minecraft.core.BlockPos.containing(eye),eye.y,
+                LunarDreadConfig.MOON_FOG_LAYER_HEIGHT.get().floatValue(),LunarDreadConfig.MOON_FOG_TOP_FADE.get().floatValue());
+            fogLayerTarget=exposure.layer();fogCaveTarget=exposure.cave();
+        }
+        fogLayer=Mth.lerp(.12f,fogLayer,fogLayerTarget);
+        fogCave=Mth.lerp(.12f,fogCave,fogCaveTarget);
         if(current()){
             int hash=world.beacons().hashCode();if(hash!=navHash){navHash=hash;navUntil=mc.level.getGameTime()+100;}
         }
@@ -124,21 +138,23 @@ public final class MoonAtmosphere {
     @SubscribeEvent public static void poseEnd(RenderLivingEvent.Post<?,?> e){if(rotated.remove(e.getEntity().getId()))e.getPoseStack().popPose();}
     @SubscribeEvent public static void fog(ViewportEvent.ComputeFogColor e){
         var mc=Minecraft.getInstance();if(mc.level==null||!LunarDreadConfig.MOON_FOG_ENABLED.get()||mc.gameRenderer.getMainCamera().getFluidInCamera()!=FogType.NONE)return;
-        float strength=MoonFogProfile.intensity(mc.level.getDayTime());if(strength<=0)return;
+        float strength=fogStrength(mc.level);if(strength<=0)return;
         int phase=kind();var c=tint((float)e.getPartialTick());
-        float weight=MoonFogProfile.colorWeight(phase,strength);
-        float red=phase==MoonCycle.BLOOD?.22f:c.x*.48f;
-        float green=phase==MoonCycle.BLOOD?.008f:c.y*.48f;
-        float blue=phase==MoonCycle.BLOOD?.022f:c.z*.48f;
+        float weight=MoonFogProfile.colorWeight(phase,strength,LunarDreadConfig.MOON_FOG_COLOR_STRENGTH.get().floatValue());
+        float brightness=LunarDreadConfig.MOON_FOG_COLOR_BRIGHTNESS.get().floatValue();
+        float red=(phase==MoonCycle.BLOOD?.4f:c.x)*brightness;
+        float green=(phase==MoonCycle.BLOOD?.003333f:c.y)*brightness;
+        float blue=(phase==MoonCycle.BLOOD?.03f:c.z)*brightness;
         e.setRed(Mth.lerp(weight,e.getRed(),red));
         e.setGreen(Mth.lerp(weight,e.getGreen(),green));
         e.setBlue(Mth.lerp(weight,e.getBlue(),blue));
     }
     @SubscribeEvent public static void fogDistance(ViewportEvent.RenderFog e){
         var mc=Minecraft.getInstance();if(mc.level==null||!LunarDreadConfig.MOON_FOG_ENABLED.get()||e.getType()!=FogType.NONE||e.getMode()!=net.minecraft.client.renderer.FogRenderer.FogMode.FOG_TERRAIN)return;
-        float strength=MoonFogProfile.intensity(mc.level.getDayTime());if(strength<=0)return;
-        var profile=MoonFogProfile.range(kind(),fogDepth,strength,e.getNearPlaneDistance(),e.getFarPlaneDistance(),
-            LunarDreadConfig.BLOOD_FOG_PEAK_DISTANCE.get().floatValue(),LunarDreadConfig.MOON_FOG_DISTANCE_SCALE.get().floatValue());
+        float strength=fogStrength(mc.level);if(strength<=0)return;
+        var profile=MoonFogProfile.range(kind(),fogCave,strength,e.getNearPlaneDistance(),e.getFarPlaneDistance(),
+            LunarDreadConfig.BLOOD_FOG_PEAK_DISTANCE.get().floatValue(),LunarDreadConfig.BLOOD_CAVE_FOG_DISTANCE.get().floatValue(),
+            LunarDreadConfig.MOON_FOG_DISTANCE_SCALE.get().floatValue(),LunarDreadConfig.OTHER_CAVE_FOG_SCALE.get().floatValue());
         e.setNearPlaneDistance(profile.near());e.setFarPlaneDistance(profile.far());e.setCanceled(true);
     }
     private static MoonUpdates.Beacon nearest(){
@@ -216,5 +232,5 @@ public final class MoonAtmosphere {
             if(drawn)BufferUploader.drawWithShader(b.buildOrThrow());else b.build();
         }finally{RenderSystem.depthMask(true);RenderSystem.enableCull();RenderSystem.defaultBlendFunc();RenderSystem.disableBlend();RenderSystem.setShaderColor(1,1,1,1);}
     }
-    @SubscribeEvent public static void logout(ClientPlayerNetworkEvent.LoggingOut e){world=null;personal=null;worldLevel=null;personalLevel=null;roll=pitch=oldRoll=oldPitch=fogDepth=fogTarget=0;menu=false;rotated.clear();navUntil=0;navHash=0;navAlways=false;}
+    @SubscribeEvent public static void logout(ClientPlayerNetworkEvent.LoggingOut e){world=null;personal=null;worldLevel=null;personalLevel=null;roll=pitch=oldRoll=oldPitch=fogCave=fogCaveTarget=0;fogLayer=fogLayerTarget=1;menu=false;rotated.clear();navUntil=0;navHash=0;navAlways=false;}
 }

@@ -1,0 +1,63 @@
+[audio]
+	#Play the looping danger score when hostile mobs approach.
+	tensionMusicEnabled = true
+	#Local volume for the danger score; 0.0 is silent.
+	# Default: 1.0
+	# Range: 0.0 ~ 2.0
+	tensionMusicVolumeScale = 1.0
+
+[visuals]
+	#Render phase-specific ground fog for all 16 moon phases. Sky and moon remain visible.
+	moonFogEnabled = true
+	#Fog bank height above the local ground, in blocks. Caves ignore this limit.
+	# Default: 12.0
+	# Range: 4.0 ~ 64.0
+	moonFogLayerHeight = 12.0
+	#Height of the soft fade at the top of the fog bank, in blocks.
+	# Default: 2.0
+	# Range: 0.5 ~ 8.0
+	moonFogTopFade = 2.0
+	#Scales non-blood moon fog sight distance; smaller values produce thicker fog.
+	# Default: 1.0
+	# Range: 0.5 ~ 2.0
+	moonFogDistanceScale = 1.0
+	#Surface sight distance at the blood moon's fog peak, in blocks; default 7.0.
+	# Default: 7.0
+	# Range: 4.0 ~ 24.0
+	bloodFogPeakDistance = 7.0
+	#Blood moon cave sight distance at peak, in blocks; default 5.0.
+	# Default: 5.0
+	# Range: 2.5 ~ 16.0
+	bloodCaveFogDistance = 5.0
+	#Scales the 8-12 block cave sight distances of other moon phases.
+	# Default: 1.0
+	# Range: 0.5 ~ 2.0
+	otherCaveFogDistanceScale = 1.0
+	#Strength of each moon's dark fog color; 1.0 is the designed intensity.
+	# Default: 1.0
+	# Range: 0.5 ~ 1.5
+	moonFogColorStrength = 1.0
+	#Brightness of the fog's phase color; smaller values make darker fog without changing sight distance.
+	# Default: 0.3
+	# Range: 0.05 ~ 0.8
+	moonFogColorBrightness = 0.3
+	#Night tick when surface fog begins to grow. Cave fog grows faster.
+	# Default: 13000
+	# Range: 13000 ~ 15000
+	moonFogDuskStart = 13000
+	#Night tick when fog first reaches full density.
+	# Default: 17500
+	# Range: 16500 ~ 18000
+	moonFogPeakStart = 17500
+	#Night tick when full density ends and fog starts clearing.
+	# Default: 19500
+	# Range: 19000 ~ 20500
+	moonFogPeakEnd = 19500
+	#Night tick when fog has cleared completely; 24000 is sunrise.
+	# Default: 24000
+	# Range: 23000 ~ 24000
+	moonFogDawnEnd = 24000
+	#Visual width of the moon strike beam and warning rings.
+	# Default: 1.0
+	# Range: 0.5 ~ 2.0
+	moonRayWidthScale = 1.0

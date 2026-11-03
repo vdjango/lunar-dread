@@ -36,11 +36,43 @@ public final class HorrorChecks {
                 "All sixteen phases must have names and the ash moon must expose its event command");
             check(MoonFogProfile.intensity(15000)<MoonFogProfile.intensity(17000)&&MoonFogProfile.intensity(22000)<MoonFogProfile.intensity(20000),
                 "Night fog must rise and fall rather than appearing at full strength instantly");
-            check(Math.abs(MoonFogProfile.range(MoonCycle.BLOOD,0,1,0,128,7,1).far()-7)<.01f
-                &&MoonFogProfile.range(MoonCycle.BLOOD,1,1,0,128,7,1).far()<4,
-                "Peak blood fog must obscure the road at seven blocks and be denser underground");
-            for(int phase=0;phase<MoonCycle.IDS.length;phase++)
-                check(MoonFogProfile.range(phase,0,1,0,128,7,1).far()<128,"Every moon phase needs its own ground fog");
+            check(MoonFogProfile.layerWeight(9,12,2)==1&&Math.abs(MoonFogProfile.layerWeight(11,12,2)-.5f)<.01f
+                &&MoonFogProfile.layerWeight(12,12,2)==0,
+                "The ground fog bank must have a twelve-block ceiling with a soft upper edge");
+            check(MoonFogProfile.strength(1,0,0)==0&&MoonFogProfile.strength(1,1,1)==1
+                &&MoonFogProfile.strength(0,1,1)==0,
+                "Climbing above the bank clears fog; caves stay foggy at night but clear by day");
+            check(Math.abs(MoonFogProfile.range(MoonCycle.BLOOD,0,1,0,128,7,5,1,1).far()-7)<.01f
+                &&Math.abs(MoonFogProfile.range(MoonCycle.BLOOD,1,1,0,128,7,5,1,1).far()-5)<.01f,
+                "Peak blood fog must reach seven blocks outdoors and five underground");
+            for(int phase=0;phase<MoonCycle.IDS.length;phase++){
+                check(MoonFogProfile.range(phase,0,1,0,128,7,5,1,1).far()<128,"Every moon phase needs its own ground fog");
+                if(phase!=MoonCycle.BLOOD){float cave=MoonFogProfile.range(phase,1,1,0,128,7,5,1,1).far();
+                    check(cave>=8&&cave<=12,"Other moon caves must allow eight to twelve blocks of sight: "+MoonCycle.IDS[phase]);}
+            }
+            var cave=pos.offset(14,0,9);var roofStates=new net.minecraft.world.level.block.state.BlockState[3];
+            for(int i=0;i<3;i++){roofStates[i]=l.getBlockState(cave.above(i+2));l.setBlockAndUpdate(cave.above(i+2),Blocks.STONE.defaultBlockState());}
+            try{check(MoonFogProfile.exposure(l,cave,100.6,12,2).cave()==1,"A stone-roofed cave must receive full cave fog");}
+            finally{for(int i=0;i<3;i++)l.setBlockAndUpdate(cave.above(i+2),roofStates[i]);}
+            // The same altitude can be inside a highland fog bank or above a valley's bank.
+            var highland=pos.offset(12,60,8);
+            var terrainStates=new java.util.LinkedHashMap<BlockPos,net.minecraft.world.level.block.state.BlockState>();
+            for(int y=highland.getY()-1;y<l.getMaxBuildHeight();y++){
+                var block=new BlockPos(highland.getX(),y,highland.getZ());
+                terrainStates.put(block,l.getBlockState(block));
+            }
+            try{
+                for(var block:terrainStates.keySet())l.setBlockAndUpdate(block,Blocks.AIR.defaultBlockState());
+                l.setBlockAndUpdate(highland.below(),Blocks.DIRT.defaultBlockState());
+                l.setBlockAndUpdate(highland.above(6),Blocks.OAK_PLANKS.defaultBlockState());
+                l.setBlockAndUpdate(highland.above(10),Blocks.OAK_LEAVES.defaultBlockState());
+                check(MoonFogProfile.exposure(l,highland,160.6,12,2).layer()==1,
+                    "Highland ground fog must follow the terrain rather than sea level");
+                check(MoonFogProfile.exposure(l,highland.above(13),173.6,12,2).layer()==0,
+                    "Tree crowns and wooden roofs must not raise the ground fog bank");
+                check(MoonFogProfile.exposure(l,highland,160.6,12,2).cave()==0,
+                    "A wooden shelter must not be treated as a natural stone cave");
+            }finally{for(var entry:terrainStates.entrySet())l.setBlockAndUpdate(entry.getKey(),entry.getValue());}
             MoonGravity.clear(l);p.getPersistentData().putBoolean("lunar_dread.gravity_falling",false);p.stopRiding();
             var m=MoonContent.SNATCHER.get().create(l);m.moveTo(261,100,260.5);m.setNoAi(true);l.addFreshEntity(m);mobs.add(m);unlock();
             check(AbductionController.capture(m,p)&&p.getVehicle()==m&&m.phase()==2,"Grab must use a real native carrier; busy="+MoonIncidents.busy(p)+" los="+m.hasLineOfSight(p)+" available="+AbductionController.available(l)+" passenger="+p.isPassenger());
