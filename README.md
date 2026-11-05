@@ -16,7 +16,7 @@
 
 Lunar Dread 是面向 **Minecraft 1.21.1 / NeoForge** 的月相恐怖模组。月亮会改变夜晚的光线、重力与遭遇：血雾遮住地面，巨月像活物一样搏动，异常生物循着玩家的声音与足迹接近。攻击保留前摇、遮挡判定与冷却，给玩家观察、躲避和救援的机会。
 
-**当前预览版：0.12.0** · [下载模组](https://github.com/vdjango/lunar-dread/releases/download/v0.12.0/lunar-dread-0.12.0.jar) · [更新说明](docs/releases/0.12.0.md) · [MCBBS 发帖文案](README-MCBBS.md)
+**当前预览版：0.12.0** · [下载模组](https://github.com/vdjango/lunar-dread/releases/download/v0.12.0/lunar-dread-0.12.0.jar) · [更新说明](docs/releases/0.12.0.md)
 
 ## 实机预览
 
