@@ -1,0 +1,53 @@
+# 独立安装默认使用概率模式；百日围城整合包预设 HUNDRED_DAYS。
+# NeoForge 21.1.265 使用实例的 config/lunar_dread-server.toml。
+[calendar]
+# PROBABILITY = 每晚概率触发，无百日上限。
+# HUNDRED_DAYS = 五天一周，前五天准备，第十天起每五天血月，第100天巨月。
+mode = "PROBABILITY"
+preserveDayOnTimeChange = true
+
+[probability]
+# 一晚出现特殊月相的总概率。0.35 = 35%，0 = 不自然触发，1 = 每晚尝试。
+eventChance = 0.35
+# 开局保护天数；0 表示第一晚即可触发。
+graceDays = 0
+# 同一种特殊月相出现后至少隔几晚；0 允许连续出现。
+repeatGap = 2
+# 事件强度等同于百日模式的第几天，不随存档年龄增长，范围6–100。
+difficultyDay = 30
+# 抽中血月时，直接出现巨月的概率。
+giantChance = 0.25
+
+# 权重只决定抽中特殊月相后的种类比例；0 禁用该种月相。
+# 全部设为0时为普通月；本分组不影响百日模式。
+[probability.weights]
+harvest = 12
+blue = 10
+wind = 8
+green = 8
+star = 6
+blood = 15
+purple = 6
+pale = 5
+mirror = 4
+gravity = 5
+amber = 4
+tide = 4
+rust = 4
+paper = 4
+ash = 5
+
+[animals]
+enabled = true
+chaseDurationScale = 1.0
+
+[encounters]
+horrorEnabled = true
+
+[moon]
+heartbeatEnabled = true
+heartbeatVolumeScale = 1.0
+
+[books]
+survivalGuideOnFirstJoin = true
+moonCodexOnFirstJoin = true

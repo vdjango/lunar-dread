@@ -2,7 +2,8 @@
   "required": true,
   "minVersion": "0.8",
   "package": "lunar.dread.client.mixin",
+  "plugin": "lunar.dread.compat.OptionalMixins",
   "compatibilityLevel": "JAVA_21",
-  "client": ["StellarMoonMixin", "MoonDirectionMixin", "BlackoutToastMixin"],
+  "client": ["VanillaMoonMixin", "StellarMoonMixin", "MoonDirectionMixin", "BlackoutToastMixin"],
   "injectors": {"defaultRequire": 1}
 }

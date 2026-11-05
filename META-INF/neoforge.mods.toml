@@ -5,10 +5,10 @@ issueTrackerURL="https://github.com/vdjango/lunar-dread/issues"
 
 [[mods]]
 modId="lunar_dread"
-version="0.11.5"
+version="0.12.0"
 displayName="Lunar Dread | 月魇"
 displayURL="https://github.com/vdjango/lunar-dread"
-description="A lunar horror mod with 16 moon variants, living blood moon attacks, terrain-bound fog, gravity anomalies, creatures and configurable encounters. Features atmospheric audio, hostile wildlife and guarded supplies. Requires Enhanced Celestials and Stellar View."
+description="Standalone lunar horror with 16 moon variants, living blood moons, terrain-bound fog, gravity anomalies and creatures. Configurable probability or 100-day progression. No other mods required. Optional integrations with Enhanced Celestials, Stellar View, The Hordes and Zombies Break & Build."
 
 [[mixins]]
 config="lunardread-moon.mixins.json"
@@ -32,28 +32,28 @@ side="BOTH"
 
 [[dependencies.lunar_dread]]
 modId="zbb"
-type="required"
+type="optional"
 versionRange="[1.7.0,)"
 ordering="AFTER"
 side="BOTH"
 
 [[dependencies.lunar_dread]]
 modId="hordes"
-type="required"
+type="optional"
 versionRange="[1.6.3f]"
 ordering="AFTER"
 side="BOTH"
 
 [[dependencies.lunar_dread]]
 modId="enhancedcelestials"
-type="required"
+type="optional"
 versionRange="[6.0.2.6,)"
 ordering="AFTER"
 side="BOTH"
 
 [[dependencies.lunar_dread]]
 modId="stellarview"
-type="required"
+type="optional"
 versionRange="[0.5.3,)"
 ordering="AFTER"
 side="CLIENT"

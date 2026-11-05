@@ -67,7 +67,7 @@ public final class SurvivalRules {
         return Math.max(1, (int)(level.getServer().overworld().getDayTime() / 24000) + 1);
     }
     static boolean grace(ServerLevel level) {
-        return day(level) <= 5 && LunarDread.score(level, "#is_blood") != 1
+        return DifficultyRules.safe(day(level)) && LunarDread.score(level, "#is_blood") != 1
             && LunarDread.score(level, "#blood_active") != 1;
     }
     static boolean recoveryNight(ServerLevel level) {

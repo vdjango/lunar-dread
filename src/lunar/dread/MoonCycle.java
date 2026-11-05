@@ -64,13 +64,18 @@ public final class MoonCycle {
     public static boolean ready(ServerLevel l){var s=state(l);return giant(l)&&l.getGameTime()-s.awakenedAt>=220;}
     static void score(ServerLevel l,String name,int value){var b=l.getScoreboard();var o=b.getObjective("lunar_dread.sys");if(o!=null)b.getOrCreatePlayerScore(ScoreHolder.forNameOnly(name),o).set(value);}
     static void command(ServerLevel l,String text){l.getServer().getCommands().performPrefixedCommand(l.getServer().createCommandSourceStack().withLevel(l).withSuppressedOutput(),text);}
-    private static boolean available(State s,int k,int day){return day>=UNLOCK[k]&&day-s.last[k]>=3;}
+    private static boolean available(State s,int k,int day){return (EventCalendar.probability()||day>=UNLOCK[k])&&day-s.last[k]>=3;}
     static int weighted(State s,Random random,int day,int from,int[] weights){
         int total=0;for(int i=0;i<weights.length;i++)if(available(s,from+i,day))total+=weights[i];
         if(total==0)return NORMAL;int roll=random.nextInt(total);
         for(int i=0;i<weights.length;i++)if(available(s,from+i,day)){roll-=weights[i];if(roll<0)return from+i;}return NORMAL;
     }
     static int choose(State s,int day,Random random){
+        if(EventCalendar.probability()) {
+            int[] weights=new int[IDS.length];for(int i=1;i<weights.length;i++)weights[i]=LunarDreadConfig.MOON_WEIGHTS[i].get();
+            return EventSchedule.probability(day,LunarDreadConfig.GRACE_DAYS.get(),LunarDreadConfig.EVENT_CHANCE.get(),
+                LunarDreadConfig.REPEAT_GAP.get(),weights,s.last,random);
+        }
         int week=DifficultyRules.week(day);
         int peace=week==1?30:week==2?25:week<=4?20:week<=8?15:week<=12?12:week<=16?10:8;
         int danger=week<=2?0:week<=4?5:week<=8?10:week<=12?15:week<=16?18:20;
@@ -80,15 +85,16 @@ public final class MoonCycle {
     }
     private static void bloodForm(ServerLevel l,State s,Random random){
         int n=Math.max(1,LunarDread.score(l,"#blood_count")+(LivingMoon.active(l)?0:1));
-        s.form=s.day>=66&&(s.day==100||random.nextInt(100)<(n<=4?25:40))?1:0;
+        s.form=(EventCalendar.probability()?random.nextDouble()<LunarDreadConfig.GIANT_CHANCE.get():s.day>=66&&(s.day==100||random.nextInt(100)<(n<=4?25:40)))?1:0;
         s.awakenedAt=s.form==1?l.getGameTime():-1;
         int r=random.nextInt(100);s.overlay=r<65?0:r<73?1:r<80?2:r<86?3:r<91?4:r<95?5:6;
         int[] required={1,11,21,26,101,51,1};
-        if(s.day<required[s.overlay]||(n==1&&s.overlay!=6))s.overlay=0;
+        if(!EventCalendar.probability()&&(s.day<required[s.overlay]||(n==1&&s.overlay!=6)))s.overlay=0;
         int theme=switch(s.overlay){case 1->PURPLE;case 2->MIRROR;case 3->AMBER;case 4->GRAVITY;case 5->PAPER;default->0;};
-        if(theme!=0){if(!available(s,theme,s.day))s.overlay=0;else{s.last[theme]=s.day;s.counts[theme]++;}}
+        if(theme!=0){if(!available(s,theme,s.day)||(EventCalendar.probability()&&LunarDreadConfig.MOON_WEIGHTS[theme].get()==0))s.overlay=0;else{s.last[theme]=s.day;s.counts[theme]++;}}
     }
     public static void ensure(ServerLevel l){
+        EventCalendar.ensure(l);
         if(l.dimension()!=Level.OVERWORLD||LunarDread.score(l,"#day")==0)return;
         int clock=(int)Math.floorMod(l.getDayTime(),24000),day=SurvivalRules.day(l);var s=state(l);
         if(clock<12000){if(LunarDread.score(l,"#safe_active")==1)score(l,"#safe_active",0);return;}
@@ -99,7 +105,7 @@ public final class MoonCycle {
             s.day=day;s.seed=l.random.nextLong();s.form=0;s.overlay=0;s.stars=0;s.nightAt=-1;s.awakenedAt=-1;s.applied=false;s.forced=false;s.deathAt=-1;
             s.beforeDry=s.dry;s.beforeStreak=s.dangerStreak;s.superMoon=false;
             var random=new Random(s.seed);s.kind=blood?BLOOD:LunarDread.score(l,"#recovering")==1?NORMAL:choose(s,day,random);
-            if(blood)bloodForm(l,s,random);s.setDirty();
+            if(s.kind==BLOOD)bloodForm(l,s,random);s.setDirty();
         }else if(DifficultyRules.safe(day)&&s.kind==BLOOD&&!s.forced){
             MoonIncidents.clearWorld(l);MoonAnomalies.clear(l);s.kind=NORMAL;s.form=0;s.overlay=0;
             s.applied=false;s.nightAt=-1;s.awakenedAt=-1;s.forced=false;s.setDirty();
@@ -114,7 +120,7 @@ public final class MoonCycle {
                 s.applied=true;s.nightAt=l.getGameTime();
                 String event=s.kind==BLOOD?"blood_moon":s.kind==HARVEST?"harvest_moon":s.kind==BLUE?"blue_moon":"default";
                 s.superMoon=(s.kind==HARVEST||s.kind==BLUE)&&new Random(s.seed^0x511E).nextInt(100)<3;if(s.superMoon)event="super_"+event;
-                command(l,"enhancedcelestials setLunarEvent enhancedcelestials:"+event);
+                if(net.neoforged.fml.ModList.get().isLoaded("enhancedcelestials"))command(l,"enhancedcelestials setLunarEvent enhancedcelestials:"+event);
                 if(s.kind==BLOOD)for(var p:l.players())if(LunarDread.player(p))
                     HorrorCueDirector.cue(p,MoonContent.RIFT.get(),1.15f,.82f);
                 if(s.countedDay!=day||s.countedKind!=s.kind){
@@ -126,6 +132,7 @@ public final class MoonCycle {
                 s.setDirty();
             }
         }
+        EventCalendar.applyMoon(l);
     }
     public static boolean awaken(ServerLevel l,ServerPlayer source){
         var s=state(l);if(!(s.forced||DifficultyRules.unlocked(SurvivalRules.day(l),14))
@@ -141,6 +148,7 @@ public final class MoonCycle {
     public static void sync(ServerLevel l){var value=snapshot(l);for(var p:l.getServer().getPlayerList().getPlayers())PacketDistributor.sendToPlayer(p,value);}
     /** Operator selection bypasses natural week gates without changing the saved difficulty curve. */
     public static boolean force(ServerLevel l,int kind){
+        EventCalendar.ensure(l);
         if(kind<0||kind>=IDS.length||LunarDread.score(l,"#day")==0)return false;
         var s=state(l);MoonIncidents.clearWorld(l);MoonAnomalies.clear(l);
         s.day=SurvivalRules.day(l);s.kind=kind;s.form=0;s.overlay=0;s.stars=0;s.superMoon=false;
@@ -158,6 +166,9 @@ public final class MoonCycle {
             if(!LunarDread.player(p))continue;
             long cured=p.getPersistentData().getLong("lunar_dread.moon_cured");if(l.getGameTime()<cured)continue;
             if(s.kind==WIND)grant(p,MobEffects.MOVEMENT_SPEED);
+            if(s.kind==BLUE&&!net.neoforged.fml.ModList.get().isLoaded("enhancedcelestials"))grant(p,MobEffects.LUCK);
+            if(s.kind==HARVEST&&!net.neoforged.fml.ModList.get().isLoaded("enhancedcelestials")&&t>0&&t%2400<40)
+                p.addEffect(new MobEffectInstance(MobEffects.SATURATION,1,0,false,false));
             if(s.kind==GREEN){grant(p,MobEffects.DIG_SPEED);if(t>0&&t%2400<40)p.addEffect(new MobEffectInstance(MobEffects.SATURATION,1,0,false,false));}
             if(s.kind==BLOOD&&s.overlay==6&&t>0&&t%3600<40&&t<=10800){
                 int boon=new Random(s.seed^(t/3600)).nextInt(3);

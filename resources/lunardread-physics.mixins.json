@@ -2,6 +2,7 @@
   "required": true,
   "minVersion": "0.8",
   "package": "lunar.dread.mixin",
+  "plugin": "lunar.dread.compat.OptionalMixins",
   "compatibilityLevel": "JAVA_21",
   "mixins": ["GravityTravelMixin", "FishingRescueMixin", "PlayerGravityPoseMixin", "HordeConversionGuardMixin"],
   "injectors": {"defaultRequire": 1}

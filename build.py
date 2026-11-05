@@ -13,7 +13,7 @@ import zipfile
 
 
 ROOT = Path(__file__).resolve().parent
-VERSION = "0.11.5"
+VERSION = "0.12.0"
 JAR_NAME = f"lunar-dread-{VERSION}.jar"
 DEPENDENCIES = {
     "Enhanced Celestials": "enhanced-celestials",

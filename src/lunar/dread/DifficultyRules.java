@@ -4,13 +4,14 @@ package lunar.dread;
 public final class DifficultyRules {
     private DifficultyRules() {}
 
-    public static int week(int day) { return Math.clamp((Math.max(1, day) + 4) / 5, 1, 20); }
-    public static int withinWeek(int day) { return (Math.max(1, day) - 1) % 5 + 1; }
+    private static int curveDay(int day) { return EventCalendar.probability()?LunarDreadConfig.RANDOM_DIFFICULTY_DAY.get():Math.max(1,day); }
+    public static int week(int day) { return Math.clamp((curveDay(day) + 4) / 5, 1, 20); }
+    public static int withinWeek(int day) { return (curveDay(day) - 1) % 5 + 1; }
     public static int score(int day) { return 5 * week(day); }
     public static int intensity(int day) { return score(day) - 5 + withinWeek(day); }
     public static int tier(int day) { return (week(day) + 1) / 2; }
-    public static boolean unlocked(int day, int firstWeek) { return week(day) >= firstWeek; }
-    public static boolean safe(int day) { return week(day) == 1; }
+    public static boolean unlocked(int day, int firstWeek) { return EventCalendar.probability() || week(day) >= firstWeek; }
+    public static boolean safe(int day) { return EventCalendar.probability()?day<=LunarDreadConfig.GRACE_DAYS.get():week(day)==1; }
     public static boolean deathBloodAllowed(int day) { return week(day) >= 3; }
 
     public static double playerScale(int activePlayers) {

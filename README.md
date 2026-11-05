@@ -16,7 +16,13 @@
 
 Lunar Dread 是面向 **Minecraft 1.21.1 / NeoForge** 的月相恐怖模组。月亮会改变夜晚的光线、重力与遭遇：血雾遮住地面，巨月像活物一样搏动，异常生物循着玩家的声音与足迹接近。攻击保留前摇、遮挡判定与冷却，给玩家观察、躲避和救援的机会。
 
+**当前预览版：0.12.0** · [下载模组](https://github.com/vdjango/lunar-dread/releases/download/v0.12.0/lunar-dread-0.12.0.jar) · [更新说明](docs/releases/0.12.0.md) · [MCBBS 发帖文案](README-MCBBS.md)
+
 ## 实机预览
+
+[十六月相独立 GIF 图集](docs/images/moons/README.md) · [下载完整 GIF 素材包](https://github.com/vdjango/lunar-dread/releases/download/v0.12.0/lunar-dread-0.12.0-moon-gifs.zip)。每种月相一张，另附巨月形态，方便单独选图发帖。
+
+![十六月相实机总览](docs/images/moons/overview.jpg)
 
 Minecraft 1.21.1 客户端实拍：月相、失重、异体、动物技能与空投。GIF 无声，可[试听心跳](docs/audio/heart.ogg)。
 
@@ -53,21 +59,40 @@ Minecraft 1.21.1 客户端实拍：月相、失重、异体、动物技能与空
 
 当前目标版本为 **Minecraft 1.21.1、NeoForge 21.1.265、Java 21**。尚无 Fabric 或 Forge 构建。
 
-| 必需依赖 | 已验证版本 | 安装位置 | 用途 |
+**0.12.0 起可独立安装，无需其他模组前置或外部数据包。**下列模组仅用于可选兼容；没有安装时使用月魇内置日历、原版天空渲染和基础收益。
+
+| 可选兼容 | 已验证版本 | 安装位置 | 用途 |
 |---|---|---|---|
 | Enhanced Celestials | 6.0.2.6 | 客户端和主机/服务端 | 基础月相接口、丰收月与蓝月收益 |
 | Stellar View | 0.5.3 | 客户端 | 月面与天空渲染衔接 |
 | Zombies Break & Build | 1.7.0 | 客户端和主机/服务端 | 方块破坏与搭建事件桥接 |
 | The Hordes | 1.6.3f | 客户端和主机/服务端 | 围城与感染系统桥接 |
 
-同时安装这些模组声明的前置库，例如 CorgiLib、Data Anchor。当前版本仍直接使用外部月相接口与渲染兼容层，不能移除 Enhanced Celestials 或客户端 Stellar View。
+选择安装上述兼容模组时，再安装它们声明的前置库；月魇本身不要求 CorgiLib、Data Anchor 等库。
 
-1. 创建对应版本的 NeoForge 实例，安装上述依赖。
+1. 用 Java 21 创建对应版本的 NeoForge 实例。
 2. 从发行版获取或自行构建 lunar-dread-*.jar，放入 mods/。
 3. 启动后确认模组列表显示 **Lunar Dread | 月魇**。
 4. 单人游戏由集成服务器执行世界逻辑；局域网与专用服务器需要客户端和主机版本一致。
 
-**可选物品兼容**：安装 Musket Mod 后，强化空投可提供火枪及纸壳弹药；安装 Jungdab's Turrets 后可提供炮塔弹药。两者不是月魇的加载依赖，未安装时使用原版武器与箭矢。
+**可选物品兼容**：安装 Musket Mod 后，强化空投可提供火枪及纸壳弹药；安装 Open Modular Turrets 后可提供机枪子弹。两者不是月魇的加载依赖，未安装时仍有原版武器与箭矢。
+
+## 自然事件模式
+
+| 模式 | 自动运行方式 |
+|---|---|
+| 概率模式 `PROBABILITY` | 独立安装默认模式。每晚默认35%概率抽取特殊月相，无天数上限；强度固定，不随世界年龄增长。 |
+| 百日模式 `HUNDRED_DAYS` | 沿用五天一周的难度曲线，前五天准备，第十天起每五天血月，之后两晚休整，第100天巨月。百日结束后停止自然事件。 |
+
+两种模式均可只安装月魇运行。《百日围城·断墙之夜》默认保留百日模式及配套数据包的围城、补给和进度；单独安装的百日模式由内置日历与有限额的原版僵尸增援运行，不会凭空增加整合包里的其他模组内容。
+
+管理员可直接切换，保留世界日期：
+
+    /lunardread mode
+    /lunardread mode probability
+    /lunardread mode hundred_days
+
+概率、开局保护、重复间隔、巨月概率及每种月相的权重均可配置。每晚只抽取一次并保存，重启不重复抽签；没有符合条件的月相时为普通月。完整中文示例见 [服务端配置](examples/lunar_dread-server.toml)。
 
 ## 月相
 
@@ -82,8 +107,8 @@ Minecraft 1.21.1 客户端实拍：月相、失重、异体、动物技能与空
 | ID | 月相 | 主要效果与遭遇 |
 |---|---|---|
 | normal | 普通月 | 常规月夜与基础遭遇。 |
-| harvest | 丰收月 | 衔接 Enhanced Celestials 的丰收收益。 |
-| blue | 蓝月 | 衔接 Enhanced Celestials 的幸运与收集收益。 |
+| harvest | 丰收月 | 缓慢补充饥饿；安装 Enhanced Celestials 时使用其丰收收益。 |
+| blue | 蓝月 | 幸运效果；安装 Enhanced Celestials 时使用其对应收益。 |
 | wind | 旅风月 | 青色月面，短时移动加速。 |
 | green | 翠息月 | 绿色月面，挖掘加速与周期性饱食收益。 |
 | star | 星砂月 | 蓝白月面，限量小型补给。 |
@@ -153,6 +178,8 @@ Minecraft 1.21.1 客户端实拍：月相、失重、异体、动物技能与空
 | /lunardread guide moon | 玩家 | 获取彩字《月相异闻录》。 |
 | /lunardread sound test &lt;id&gt; | 玩家 | 试听指定音效。 |
 | /lunardread config | 管理员 | 查看服务端配置。 |
+| /lunardread time clock &lt;0–23999&gt; | 管理员 | 切换当前天的时刻，保留已经度过的天数。 |
+| /lunardread time day &lt;天数&gt; | 管理员 | 明确设置世界日期，1 表示第 1 天；保留当前时刻。 |
 
 可试听的声音 ID：heart、tension、whisper、rift、scrape、grab、silence。心跳与效果音受“敌对生物”音量影响。
 
@@ -172,10 +199,20 @@ Minecraft 1.21.1 客户端实拍：月相、失重、异体、动物技能与空
 
 ## 配置
 
-NeoForge 首次加载后生成 config/lunar_dread-server.toml 和 config/lunar_dread-client.toml。世界的 serverconfig/ 可覆盖服务端配置；修改后重启世界可确保全部选项生效。
+NeoForge 21.1.265 首次加载后，在实例的 config/ 下生成 lunar_dread-server.toml 和 lunar_dread-client.toml。房主或服主修改服务端配置；修改后重新进入世界可确保全部选项生效。联机玩家使用房主下发的规则。
+
+默认保留日期：FTB Library 的白天、夜晚按钮，以及直接执行的 `/time set day/noon/night/midnight`、`/time set 0–23999`，只改变当天时刻。例如第 6 天切到白天后仍是第 6 天。天气切换不改变日期。`/time add` 和大于等于 24000 的绝对时间设置保留原行为；需要明确回到第 1 天时，用 `/lunardread time day 1`。此保护适用于上述按钮和直接命令，不拦截其他模组直接修改世界时间的 API。
 
 | 文件 | 配置键 | 默认值 | 用途 |
 |---|---|---|---|
+| server | calendar.mode | PROBABILITY | 自然事件模式；整合包预设 HUNDRED_DAYS |
+| server | probability.eventChance | 0.35 | 每晚特殊月相总概率，0–1 |
+| server | probability.graceDays | 0 | 概率模式开局保护天数 |
+| server | probability.repeatGap | 2 | 同一种特殊月相的间隔夜数 |
+| server | probability.difficultyDay | 30 | 概率模式固定强度，等同百日模式第6–100天 |
+| server | probability.giantChance | 0.25 | 概率模式抽中血月后成为巨月的概率 |
+| server | probability.weights.&lt;月相ID&gt; | 见示例 | 种类权重，0禁用；只影响概率模式 |
+| server | calendar.preserveDayOnTimeChange | true | 切换白天、夜晚时保留日期，可关闭以恢复原命令行为 |
 | server | animals.enabled | true | 异常动物行为开关 |
 | server | animals.chaseDurationScale | 1.0 | 追击时长倍率，0.5–2.0 |
 | server | encounters.horrorEnabled | true | 原创恐怖遭遇开关 |
@@ -209,6 +246,7 @@ NeoForge 首次加载后生成 config/lunar_dread-server.toml 和 config/lunar_d
     /lunardread config set chase 0.75
     /lunardread config set heartbeat true
     /lunardread config set heartvolume 1.25
+    /lunardread config set keeptime true
 
 ## 从源码构建
 
@@ -217,7 +255,7 @@ NeoForge 首次加载后生成 config/lunar_dread-server.toml 和 config/lunar_d
     git clone git@github.com:vdjango/lunar-dread.git
     cd lunar-dread
 
-将以下原始 JAR 放入本地依赖目录，每种只保留一个匹配版本：Enhanced Celestials、Stellar View、CorgiLib、Data Anchor、The Hordes、Zombies Break & Build。构建脚本只读取这些文件，不下载或重新分发第三方模组。
+将以下原始 JAR 放入本地依赖目录，每种只保留一个匹配版本：Enhanced Celestials、Stellar View、CorgiLib、Data Anchor、The Hordes、Zombies Break & Build。这些仅用于编译可选兼容代码，玩家运行无需安装。构建脚本只读取这些文件，不下载或重新分发第三方模组。
 
 PowerShell 示例：
 
@@ -235,7 +273,7 @@ Linux/macOS 示例：
     export LUNAR_DREAD_DEPENDENCY_DIR=/path/to/dependency-jars
     python3 build.py
 
-输出为 dist/lunar-dread-0.11.5.jar。音效与材质已包含在 resources/，常规构建无需重新生成。
+输出为 dist/lunar-dread-0.12.0.jar。音效与材质已包含在 resources/，常规构建无需重新生成。
 
     src/lunar/dread/    Java 源码与客户端实现
     resources/         语言、声音、模型、Mixin 和手册
@@ -246,7 +284,7 @@ Linux/macOS 示例：
 
 ## 已知限制
 
-当前版本的自动事件读取 lunar_dread.sys 世界进度。单独安装时需要先初始化进度；独立日历尚未加入模组。完整依赖列表见[安装](#安装)。
+独立安装自动建立并保存世界进度，无需手动初始化计分板。安装百日围城数据包时，百日模式自动衔接其进度；切换为概率模式时，配套数据包的百日调度暂停。
 
 雾层按观察点相对当地地表的高度衰减。洞穴识别依据石土覆盖，人工厚石顶也可能使用洞穴视距。
 

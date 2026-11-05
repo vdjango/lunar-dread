@@ -96,7 +96,7 @@ public final class SupplyDrops {
         if(!(l.getBlockEntity(pos) instanceof ChestBlockEntity chest))return;
         chest.setItem(0,new ItemStack(Items.IRON_INGOT,star?2:tier==1?8:4));chest.setItem(1,new ItemStack(Items.COPPER_INGOT,star?3:tier==1?10:6));
         chest.setItem(2,new ItemStack(Items.REDSTONE,star?2:tier==1?6:4));chest.setItem(3,new ItemStack(Items.COOKED_BEEF,star?2:4));
-        var turretAmmo=optionalItem("jdturrets","turret_ammo",star?8:tier==1?32:16);
+        var turretAmmo=optionalItem("openmodularturrets","ammo_bullet",star?8:tier==1?32:16);
         if(!turretAmmo.isEmpty())chest.setItem(4,turretAmmo);
         int day=SurvivalRules.day(l);
         if(star){

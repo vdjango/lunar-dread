@@ -22,6 +22,9 @@ public final class IntegratedMoonProbe {
             String id=value.get("id").getAsString();if(id.equals(last))return;last=id;
             for(var command:value.getAsJsonArray("commands")){
                 if(command.getAsString().equals("__halt"))server.halt(false);
+                else if(command.getAsString().startsWith("__logistics "))
+                    Class.forName("lunar.dread.LogisticsChecks").getMethod("run",net.minecraft.server.level.ServerPlayer.class,String.class)
+                        .invoke(null,server.getPlayerList().getPlayers().getFirst(),command.getAsString().substring(12));
                 else server.getCommands().performPrefixedCommand(server.createCommandSourceStack().withPermission(4),command.getAsString());
             }
             System.out.println("LUNAR_INTEGRATED_BARRIER "+id);

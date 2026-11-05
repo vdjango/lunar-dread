@@ -40,6 +40,8 @@ public final class LunarDread {
         NeoForge.EVENT_BUS.register(this);
         NeoForge.EVENT_BUS.register(new LunarDreadCommands());
         NeoForge.EVENT_BUS.register(new LunarCommands());
+        NeoForge.EVENT_BUS.register(new CalendarCommands());
+        NeoForge.EVENT_BUS.register(new EventCalendar());
         NeoForge.EVENT_BUS.register(new GuideBook());
         NeoForge.EVENT_BUS.register(new SurvivalRules());
         NeoForge.EVENT_BUS.register(new ThreatSenses());
@@ -59,7 +61,7 @@ public final class LunarDread {
         NeoForge.EVENT_BUS.register(new MobProgression());
         NeoForge.EVENT_BUS.register(new RecoveryNight());
         NeoForge.EVENT_BUS.register(new BlockRecovery());
-        ZbbRecoveryBridge.register();
+        if(net.neoforged.fml.ModList.get().isLoaded("zbb")) ZbbRecoveryBridge.register();
     }
 
     private static boolean ally(Entity e) {

@@ -27,6 +27,7 @@ public final class GuideBook {
     private static final String GUIDE_MARKER = "lunar_dread.guide";
     private static final String MOON_MARKER = "lunar_dread.moon_codex";
     private static final WrittenBookContent GUIDE = load("/lunar_dread/guide.json");
+    private static final WrittenBookContent STANDALONE = load("/lunar_dread/guide-standalone.json");
     private static final WrittenBookContent MOON = load("/lunar_dread/moon_codex.json");
     private static WrittenBookContent load(String resource) {
         try (var stream = GuideBook.class.getResourceAsStream(resource)) {
@@ -53,8 +54,11 @@ public final class GuideBook {
         } catch (java.io.IOException error) { throw new IllegalStateException(error); }
     }
     private static ItemStack book(boolean moon) {
+        return book(moon, true);
+    }
+    private static ItemStack book(boolean moon, boolean pack) {
         ItemStack stack = new ItemStack(Items.WRITTEN_BOOK);
-        stack.set(DataComponents.WRITTEN_BOOK_CONTENT, moon ? MOON : GUIDE);
+        stack.set(DataComponents.WRITTEN_BOOK_CONTENT, moon ? MOON : pack ? GUIDE : STANDALONE);
         CompoundTag marker = new CompoundTag();
         marker.putBoolean(moon ? MOON_MARKER : GUIDE_MARKER, true);
         stack.set(DataComponents.CUSTOM_DATA, CustomData.of(marker));
@@ -63,24 +67,26 @@ public final class GuideBook {
     private static boolean isBook(ItemStack stack, boolean moon) {
         return stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag().getBoolean(moon ? MOON_MARKER : GUIDE_MARKER);
     }
-    private static void refresh(ItemStack stack) {
-        if (isBook(stack, false)) stack.set(DataComponents.WRITTEN_BOOK_CONTENT, GUIDE);
+    private static void refresh(ItemStack stack, boolean pack) {
+        if (isBook(stack, false)) stack.set(DataComponents.WRITTEN_BOOK_CONTENT, pack ? GUIDE : STANDALONE);
         if (isBook(stack, true)) stack.set(DataComponents.WRITTEN_BOOK_CONTENT, MOON);
     }
     private static void deliver(ServerPlayer player, boolean moon) {
+        boolean pack = EventCalendar.packOwns(player.serverLevel());
         for (ItemStack stack : player.getInventory().items) if (isBook(stack, moon)) {
-            refresh(stack); return;
+            refresh(stack, pack); return;
         }
         for (ItemStack stack : player.getInventory().offhand) if (isBook(stack, moon)) {
-            refresh(stack); return;
+            refresh(stack, pack); return;
         }
-        ItemStack book = book(moon);
+        ItemStack book = book(moon, pack);
         if (!player.getInventory().add(book)) player.drop(book, false);
     }
     @SubscribeEvent public void login(PlayerEvent.PlayerLoggedInEvent event) {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
-        for (ItemStack stack : player.getInventory().items) refresh(stack);
-        for (ItemStack stack : player.getInventory().offhand) refresh(stack);
+        boolean pack = EventCalendar.packOwns(player.serverLevel());
+        for (ItemStack stack : player.getInventory().items) refresh(stack, pack);
+        for (ItemStack stack : player.getInventory().offhand) refresh(stack, pack);
         if (LunarDreadConfig.SURVIVAL_BOOK_ON_JOIN.get() && !player.getPersistentData().getBoolean(GUIDE_RECEIVED)) {
             deliver(player, false); player.getPersistentData().putBoolean(GUIDE_RECEIVED, true);
         }

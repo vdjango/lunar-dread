@@ -6,6 +6,11 @@ import net.neoforged.neoforge.common.ModConfigSpec;
 public final class LunarDreadConfig {
     public static final ModConfigSpec SERVER_SPEC;
     public static final ModConfigSpec CLIENT_SPEC;
+    public enum EventMode { PROBABILITY, HUNDRED_DAYS }
+    public static final ModConfigSpec.EnumValue<EventMode> EVENT_MODE;
+    public static final ModConfigSpec.DoubleValue EVENT_CHANCE, GIANT_CHANCE;
+    public static final ModConfigSpec.IntValue GRACE_DAYS, REPEAT_GAP, RANDOM_DIFFICULTY_DAY;
+    public static final ModConfigSpec.IntValue[] MOON_WEIGHTS = new ModConfigSpec.IntValue[16];
     public static final ModConfigSpec.BooleanValue ANIMALS_ENABLED;
     public static final ModConfigSpec.DoubleValue ANIMAL_CHASE_SCALE;
     public static final ModConfigSpec.BooleanValue HORROR_ENCOUNTERS_ENABLED;
@@ -13,6 +18,7 @@ public final class LunarDreadConfig {
     public static final ModConfigSpec.DoubleValue HEARTBEAT_VOLUME_SCALE;
     public static final ModConfigSpec.BooleanValue SURVIVAL_BOOK_ON_JOIN;
     public static final ModConfigSpec.BooleanValue MOON_BOOK_ON_JOIN;
+    public static final ModConfigSpec.BooleanValue PRESERVE_DAY_ON_TIME_CHANGE;
     public static final ModConfigSpec.BooleanValue TENSION_MUSIC_ENABLED;
     public static final ModConfigSpec.DoubleValue TENSION_MUSIC_VOLUME_SCALE;
     public static final ModConfigSpec.BooleanValue MOON_FOG_ENABLED;
@@ -32,6 +38,37 @@ public final class LunarDreadConfig {
 
     static {
         var server = new ModConfigSpec.Builder();
+        server.push("calendar");
+        EVENT_MODE = server.comment("PROBABILITY: independent nightly rolls, no day limit. HUNDRED_DAYS: five-day weeks and a 100-day progression. The Siege 100 datapack is used when installed in HUNDRED_DAYS mode.")
+            .translation("lunar_dread.config.calendar.mode")
+            .defineEnum("mode", EventMode.PROBABILITY);
+        PRESERVE_DAY_ON_TIME_CHANGE = server.comment("Keep elapsed days when using FTB Library day/night buttons or direct /time set shortcuts below 24000 ticks. Use /lunardread time day <day> to change the date explicitly.")
+            .translation("lunar_dread.config.calendar.preserveDayOnTimeChange")
+            .define("preserveDayOnTimeChange", true);
+        server.pop();
+        server.push("probability");
+        EVENT_CHANCE = server.comment("Chance of a special moon each night, from 0.0 to 1.0. Remaining nights are ordinary. Rolled once and saved, including across restarts.")
+            .translation("lunar_dread.config.probability.eventChance")
+            .defineInRange("eventChance", 0.35, 0.0, 1.0);
+        GRACE_DAYS = server.comment("Initial safe days in probability mode. Zero allows events on the first night.")
+            .translation("lunar_dread.config.probability.graceDays")
+            .defineInRange("graceDays", 0, 0, 10000);
+        REPEAT_GAP = server.comment("Minimum nights between the same special moon. Zero permits consecutive appearances.")
+            .translation("lunar_dread.config.probability.repeatGap")
+            .defineInRange("repeatGap", 2, 0, 10000);
+        RANDOM_DIFFICULTY_DAY = server.comment("Fixed difficulty equivalent in probability mode; it does not increase with world age. Moon types are not locked behind progression.")
+            .translation("lunar_dread.config.probability.difficultyDay")
+            .defineInRange("difficultyDay", 30, 6, 100);
+        GIANT_CHANCE = server.comment("Chance for a probability-mode blood moon to begin as a giant moon.")
+            .translation("lunar_dread.config.probability.giantChance")
+            .defineInRange("giantChance", 0.25, 0.0, 1.0);
+        server.push("weights");
+        String[] ids = {"normal","harvest","blue","wind","green","star","blood","purple","pale","mirror","gravity","amber","tide","rust","paper","ash"};
+        int[] weights = {0,12,10,8,8,6,15,6,5,4,5,4,4,4,4,5};
+        for (int i=1;i<ids.length;i++) MOON_WEIGHTS[i] = server.comment("Relative weight; zero disables this moon in probability mode.")
+            .defineInRange(ids[i], weights[i], 0, 10000);
+        server.pop();
+        server.pop();
         server.push("animals");
         ANIMALS_ENABLED = server.comment("Enable the custom animal pursuit and attack abilities.")
             .translation("lunar_dread.config.animals.enabled")
